@@ -1,0 +1,1511 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SimCorp Alternatives · LP Platform · Phase 2</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,400&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --brand-deep:#00062B; --brand-deep-80:#1A1F42; --brand-deep-20:#D6D7E8;
+  --brand-white:#FFFFFF; --brand-grey:#333333; --brand-grey-60:#858585;
+  --brand-grey-10:#F5F5F5; --brand-grey-05:#FAFAFA; --border:#E2E2E8;
+  --pos:#00875A; --neg:#C0392B; --warn:#996300;
+  --font-display:'Syne',sans-serif; --font-body:'DM Sans',sans-serif; --font-mono:'JetBrains Mono',monospace;
+  --r-sm:3px; --r-md:5px; --r-lg:8px;
+  --sidebar-w:228px; --nav-h:54px; --ai-h:44px;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+html{font-size:13px;}
+body{font-family:var(--font-body);background:var(--brand-grey-10);color:var(--brand-grey);min-height:100vh;overflow-x:hidden;}
+.screen{display:none;min-height:100vh;}
+.screen.active{display:flex;}
+.app-layout{display:flex;width:100%;min-height:100vh;}
+
+/* SIDEBAR */
+.sidebar{width:var(--sidebar-w);min-height:100vh;background:var(--brand-deep);display:flex;flex-direction:column;position:fixed;left:0;top:0;bottom:0;z-index:100;}
+.sidebar-logo{padding:18px 18px 14px;border-bottom:1px solid rgba(255,255,255,0.07);}
+.sidebar-logo .wordmark{font-family:var(--font-display);font-weight:700;font-size:12.5px;color:#fff;letter-spacing:0.02em;line-height:1.1;}
+.sidebar-logo .module-tag{font-size:9.5px;color:rgba(255,255,255,0.35);font-weight:400;margin-top:2px;letter-spacing:0.07em;text-transform:uppercase;}
+.sidebar-module-switcher{margin:10px 10px 4px;display:flex;background:rgba(255,255,255,0.05);border-radius:var(--r-md);padding:3px;}
+.sidebar-module-btn{flex:1;padding:5px 4px;font-family:var(--font-body);font-size:10.5px;font-weight:500;color:rgba(255,255,255,0.4);border:none;background:transparent;border-radius:3px;cursor:pointer;transition:all 140ms;}
+.sidebar-module-btn.active{background:rgba(255,255,255,0.1);color:#fff;}
+.sidebar-nav{flex:1;padding:6px 0;overflow-y:auto;}
+.nav-section-label{font-size:9px;font-weight:600;letter-spacing:0.11em;text-transform:uppercase;color:rgba(255,255,255,0.22);padding:12px 18px 4px;}
+.nav-item{display:flex;align-items:center;gap:10px;padding:8px 18px;cursor:pointer;color:rgba(255,255,255,0.52);font-size:12px;font-weight:400;border-left:2px solid transparent;transition:all 130ms;}
+.nav-item:hover{color:rgba(255,255,255,0.85);background:rgba(255,255,255,0.04);}
+.nav-item.active{color:#fff;border-left-color:rgba(255,255,255,0.6);background:rgba(255,255,255,0.07);font-weight:500;}
+.nav-item .nav-icon{font-size:13px;width:16px;text-align:center;flex-shrink:0;}
+.nav-badge{margin-left:auto;background:rgba(255,255,255,0.12);color:rgba(255,255,255,0.7);font-size:9px;font-weight:600;padding:1px 5px;border-radius:8px;font-family:var(--font-mono);}
+.sidebar-footer{padding:12px 14px;border-top:1px solid rgba(255,255,255,0.07);}
+.user-row{display:flex;align-items:center;gap:9px;}
+.user-avatar{width:26px;height:26px;border-radius:50%;background:rgba(255,255,255,0.12);display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;color:rgba(255,255,255,0.8);flex-shrink:0;}
+.user-name{font-size:11.5px;font-weight:500;color:#fff;}
+.user-role{font-size:10px;color:rgba(255,255,255,0.35);}
+
+/* MAIN */
+.main-content{margin-left:var(--sidebar-w);flex:1;display:flex;flex-direction:column;min-width:0;}
+.topbar{background:#fff;border-bottom:1px solid var(--border);padding:0 26px;height:50px;display:flex;align-items:center;gap:14px;position:sticky;top:0;z-index:50;}
+.topbar-breadcrumb{font-size:12px;color:var(--brand-grey-60);display:flex;align-items:center;gap:6px;}
+.topbar-breadcrumb .current{color:var(--brand-grey);font-weight:500;}
+.topbar-spacer{flex:1;}
+.topbar-actions{display:flex;align-items:center;gap:8px;}
+
+/* BUTTONS */
+.btn{display:inline-flex;align-items:center;gap:6px;padding:7px 13px;border-radius:var(--r-md);font-family:var(--font-body);font-size:12px;font-weight:500;cursor:pointer;transition:all 130ms;border:none;white-space:nowrap;}
+.btn-primary{background:var(--brand-deep);color:#fff;}
+.btn-primary:hover{background:#1A1F42;}
+.btn-secondary{background:#fff;color:var(--brand-grey);border:1px solid var(--border);}
+.btn-secondary:hover{background:var(--brand-grey-10);}
+.btn-success{background:#fff;color:var(--pos);border:1px solid rgba(0,135,90,0.3);}
+.btn-success:hover{background:#F2F9F6;}
+.btn-danger{background:#fff;color:var(--neg);border:1px solid rgba(192,57,43,0.3);}
+.btn-danger:hover{background:#FBF3F2;}
+.btn-sm{padding:5px 10px;font-size:11.5px;}
+.btn-lg{padding:9px 18px;font-size:13px;}
+.view-switcher-pill{font-size:11px;color:rgba(0,0,0,0.3);border:1px solid var(--border);border-radius:20px;padding:4px 10px;cursor:pointer;background:#fff;font-family:var(--font-body);}
+.view-switcher-pill:hover{border-color:#BDBDBD;}
+
+/* PAGE */
+.page-body{padding:22px 26px;}
+.page-header{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:18px;gap:14px;flex-wrap:wrap;}
+.page-title{font-family:var(--font-display);font-size:19px;font-weight:700;color:var(--brand-deep);line-height:1.2;}
+.page-subtitle{font-size:12px;color:var(--brand-grey-60);margin-top:3px;}
+.page-actions{display:flex;gap:8px;align-items:center;flex-wrap:wrap;}
+
+/* STAT CARDS */
+.stat-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(168px,1fr));gap:10px;margin-bottom:20px;}
+.stat-card{background:#fff;border-radius:var(--r-lg);padding:14px 16px;border:1px solid var(--border);}
+.stat-label{font-size:10.5px;font-weight:500;color:var(--brand-grey-60);text-transform:uppercase;letter-spacing:0.07em;margin-bottom:5px;}
+.stat-value{font-family:var(--font-mono);font-size:21px;font-weight:600;color:var(--brand-deep);line-height:1;}
+.stat-value.neg{color:var(--neg);}
+.stat-value.pos{color:var(--pos);}
+.stat-meta{font-size:11px;color:var(--brand-grey-60);margin-top:4px;}
+
+/* TABLE */
+.table-card{background:#fff;border-radius:var(--r-lg);border:1px solid var(--border);overflow:hidden;}
+.table-toolbar{padding:13px 16px;display:flex;align-items:center;gap:10px;border-bottom:1px solid var(--border);flex-wrap:wrap;}
+.table-title{font-family:var(--font-display);font-size:13.5px;font-weight:600;color:var(--brand-deep);}
+.table-count{font-size:11px;color:var(--brand-grey-60);background:var(--brand-grey-10);padding:2px 7px;border-radius:9px;font-family:var(--font-mono);}
+.toolbar-spacer{flex:1;}
+.search-input{padding:5px 10px;border:1px solid var(--border);border-radius:var(--r-md);font-family:var(--font-body);font-size:12px;color:var(--brand-grey);outline:none;width:180px;}
+.search-input:focus{border-color:#888;}
+.filter-btn{padding:5px 10px;border:1px solid var(--border);border-radius:var(--r-md);background:#fff;font-family:var(--font-body);font-size:12px;cursor:pointer;color:var(--brand-grey);display:flex;align-items:center;gap:5px;}
+.filter-btn:hover{background:var(--brand-grey-10);}
+.data-table{width:100%;border-collapse:collapse;}
+.data-table th{padding:8px 13px;text-align:left;font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:0.08em;color:var(--brand-grey-60);background:var(--brand-grey-10);border-bottom:1px solid var(--border);white-space:nowrap;}
+.data-table td{padding:10px 13px;font-size:12.5px;border-bottom:1px solid #F3F3F6;vertical-align:middle;}
+.data-table tr:last-child td{border-bottom:none;}
+.data-table tr.clickable{cursor:pointer;}
+.data-table tr.clickable:hover td{background:var(--brand-grey-05);}
+.mono{font-family:var(--font-mono);font-size:12px;}
+
+/* CHIPS */
+.chip{display:inline-flex;align-items:center;gap:3px;padding:2px 7px;border-radius:3px;font-size:10px;font-weight:600;white-space:nowrap;letter-spacing:0.02em;}
+.chip::before{content:'';display:inline-block;width:4px;height:4px;border-radius:50%;background:currentColor;flex-shrink:0;}
+.chip-overdue{background:#F5EAEA;color:#7A2020;}
+.chip-pending{background:#F5F1E8;color:#6B4A00;}
+.chip-approved{background:#EAF3EC;color:#1A5C2A;}
+.chip-funded{background:#EAF3EC;color:#1A5C2A;}
+.chip-review{background:#EDEDF2;color:#2A2A4A;}
+.chip-extracted{background:#F0EEF4;color:#3A2E52;}
+.chip-draft{background:#F0F0F0;color:#5A5A5A;}
+.chip-nli{background:var(--brand-deep);color:rgba(255,255,255,0.75);font-size:9px;letter-spacing:0.05em;}
+.chip-nli::before{display:none;}
+
+/* CONFIDENCE */
+.confidence-bar{display:flex;align-items:center;gap:6px;}
+.confidence-track{flex:1;height:3px;background:#E8E8ED;border-radius:2px;overflow:hidden;}
+.confidence-fill{height:100%;border-radius:2px;}
+.conf-high{background:#888;}
+.conf-medium{background:#B8860B;}
+.conf-low{background:#A02020;}
+.confidence-pct{font-family:var(--font-mono);font-size:10.5px;font-weight:600;min-width:26px;text-align:right;}
+.conf-high-txt{color:#555;} .conf-medium-txt{color:var(--warn);} .conf-low-txt{color:var(--neg);}
+
+/* PANELS */
+.panel-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:18px;}
+.panel{background:#fff;border-radius:var(--r-lg);border:1px solid var(--border);overflow:hidden;}
+.panel-header{padding:13px 16px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;}
+.panel-title{font-family:var(--font-display);font-size:12.5px;font-weight:600;color:var(--brand-deep);}
+.panel-body{padding:14px 16px;}
+
+/* FIELD ROWS */
+.field-row{display:flex;align-items:flex-start;gap:12px;padding:9px 0;border-bottom:1px solid #F3F3F6;}
+.field-row:last-child{border-bottom:none;}
+.field-label{font-size:10.5px;font-weight:500;color:var(--brand-grey-60);text-transform:uppercase;letter-spacing:0.06em;min-width:116px;flex-shrink:0;padding-top:2px;}
+.field-value{font-size:12.5px;color:var(--brand-grey);flex:1;}
+
+/* FORM */
+.form-group{margin-bottom:13px;}
+.form-label{display:block;font-size:10.5px;font-weight:500;color:var(--brand-grey-60);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:5px;}
+.form-input{width:100%;padding:7px 9px;border:1px solid var(--border);border-radius:var(--r-md);font-family:var(--font-body);font-size:12.5px;color:var(--brand-grey);outline:none;background:#fff;}
+.form-input:focus{border-color:#888;}
+.form-input.flagged{border-color:#B8860B;background:#FDFAF3;}
+.form-select{width:100%;padding:7px 9px;border:1px solid var(--border);border-radius:var(--r-md);font-family:var(--font-body);font-size:12.5px;color:var(--brand-grey);background:#fff;outline:none;cursor:pointer;}
+
+/* ALERTS */
+.alert{display:flex;align-items:flex-start;gap:10px;padding:11px 13px;border-radius:var(--r-md);margin-bottom:14px;font-size:12px;line-height:1.5;}
+.alert-warning{background:#FDFAF3;border:1px solid #D4A020;color:#5A3A00;}
+.alert-error{background:#FBF3F2;border:1px solid #C07060;color:#6A1A1A;}
+.alert-success{background:#F2F9F6;border:1px solid #70B090;color:#0A4020;}
+.alert-info{background:#F5F5FA;border:1px solid #AAAAB8;color:#2A2A4A;}
+.alert-icon{font-size:13px;margin-top:1px;flex-shrink:0;}
+
+/* PROGRESS */
+.progress-bar-wrap{height:4px;background:#E8E8ED;border-radius:2px;overflow:hidden;}
+.progress-bar-fill{height:100%;border-radius:2px;}
+
+/* APPROVAL CHAIN */
+.approval-chain{display:flex;align-items:center;margin:10px 0;}
+.approval-step{display:flex;flex-direction:column;align-items:center;gap:4px;flex:1;position:relative;}
+.approval-step:not(:last-child)::after{content:'';position:absolute;top:13px;right:-50%;width:100%;height:1px;background:var(--border);z-index:0;}
+.approval-step.done:not(:last-child)::after{background:#888;}
+.approval-node{width:26px;height:26px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;z-index:1;position:relative;background:#F0F0F0;border:1px solid #CCC;color:#666;}
+.approval-node.done{background:var(--brand-deep);border-color:var(--brand-deep);color:#fff;}
+.approval-node.active{background:var(--brand-deep);border-color:var(--brand-deep);color:#fff;box-shadow:0 0 0 3px rgba(0,6,43,0.12);}
+.approval-label{font-size:9px;color:var(--brand-grey-60);text-align:center;font-weight:500;}
+
+/* TIMELINE */
+.timeline-item{display:flex;gap:12px;padding-bottom:18px;position:relative;}
+.timeline-item::before{content:'';position:absolute;left:13px;top:26px;bottom:0;width:1px;background:#E8E8ED;}
+.timeline-item:last-child::before{display:none;}
+.tl-dot{width:26px;height:26px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;flex-shrink:0;}
+.tl-past{background:#EDEDF0;color:#666;}
+.tl-current{background:var(--neg);color:#fff;}
+.tl-future{background:#EDEDF0;color:#AAA;}
+.tl-time{font-size:10.5px;color:var(--brand-grey-60);margin-bottom:2px;font-family:var(--font-mono);}
+.tl-title{font-size:12.5px;font-weight:600;color:var(--brand-grey);margin-bottom:2px;}
+.tl-desc{font-size:11.5px;color:var(--brand-grey-60);line-height:1.4;}
+
+/* WIRE BOX */
+.wire-box{background:var(--brand-deep);border-radius:var(--r-lg);padding:18px;color:#fff;margin-bottom:14px;}
+.wire-box-label{font-size:9.5px;letter-spacing:0.1em;text-transform:uppercase;color:rgba(255,255,255,0.35);margin-bottom:12px;font-weight:600;}
+.wire-field{margin-bottom:9px;}
+.wire-field-label{font-size:9.5px;color:rgba(255,255,255,0.4);margin-bottom:2px;text-transform:uppercase;letter-spacing:0.06em;}
+.wire-field-value{font-family:var(--font-mono);font-size:12.5px;color:rgba(255,255,255,0.9);}
+.wire-field-value.amount{font-size:22px;font-weight:700;color:#fff;}
+.wire-divider{height:1px;background:rgba(255,255,255,0.08);margin:10px 0;}
+
+/* IBOR BADGE */
+.ibor-badge{display:inline-flex;align-items:center;gap:5px;font-size:10.5px;font-weight:600;padding:3px 8px;border-radius:var(--r-sm);background:var(--brand-deep);color:rgba(255,255,255,0.65);}
+.ibor-live-dot{width:5px;height:5px;border-radius:50%;background:#79F2C0;animation:livePulse 2s ease-in-out infinite;}
+@keyframes livePulse{0%,100%{opacity:1;}50%{opacity:0.3;}}
+
+/* ACTION PREVIEW CARD */
+.action-preview-card{background:var(--brand-grey-10);border:1px solid var(--border);border-radius:var(--r-md);padding:12px 13px;margin-bottom:13px;}
+.action-preview-label{font-size:9.5px;font-weight:600;letter-spacing:0.08em;text-transform:uppercase;color:var(--brand-grey-60);margin-bottom:5px;}
+.action-preview-action{font-size:12.5px;font-weight:600;color:var(--brand-deep);margin-bottom:3px;}
+.action-preview-detail{font-size:12px;color:var(--brand-grey-60);}
+.action-preview-echo{margin-top:10px;padding-top:10px;border-top:1px solid var(--border);}
+.echo-label{font-size:10.5px;color:var(--brand-grey-60);margin-bottom:5px;}
+.echo-input{width:100%;padding:6px 9px;border:1px solid var(--border);border-radius:var(--r-md);font-family:var(--font-mono);font-size:12px;color:var(--brand-grey);outline:none;}
+.echo-input:focus{border-color:#888;}
+
+/* MODAL */
+.modal-overlay{position:fixed;inset:0;background:rgba(0,6,43,0.45);z-index:300;display:none;align-items:center;justify-content:center;padding:20px;}
+.modal-overlay.open{display:flex;}
+.modal{background:#fff;border-radius:var(--r-lg);width:100%;max-width:460px;box-shadow:0 16px 50px rgba(0,6,43,0.18);overflow:hidden;}
+.modal-header{padding:16px 18px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;}
+.modal-title{font-family:var(--font-display);font-size:14px;font-weight:700;color:var(--brand-deep);}
+.modal-close{background:none;border:none;font-size:16px;cursor:pointer;color:var(--brand-grey-60);padding:2px 6px;border-radius:var(--r-sm);}
+.modal-close:hover{background:var(--brand-grey-10);}
+.modal-body{padding:18px;}
+.modal-footer{padding:13px 18px;border-top:1px solid var(--border);display:flex;justify-content:flex-end;gap:8px;}
+
+/* DIVIDER */
+.divider{height:1px;background:var(--border);margin:14px 0;}
+
+/* MOBILE NAV */
+.mobile-nav{display:none;position:fixed;bottom:0;left:0;right:0;background:#fff;border-top:1px solid var(--border);z-index:100;height:var(--nav-h);}
+.mobile-nav-items{display:flex;align-items:center;height:100%;}
+.mobile-nav-item{flex:1;display:flex;flex-direction:column;align-items:center;gap:2px;padding:4px 2px;cursor:pointer;color:var(--brand-grey-60);font-size:9.5px;font-weight:500;border:none;background:transparent;font-family:var(--font-body);position:relative;transition:color 130ms;}
+.mobile-nav-item .mob-icon{font-size:15px;}
+.mobile-nav-item.active{color:var(--brand-deep);}
+.mobile-nav-badge{position:absolute;top:2px;right:calc(50% - 18px);background:rgba(0,6,43,0.65);color:#fff;font-size:8px;width:13px;height:13px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;}
+.mobile-topbar{display:none;background:var(--brand-deep);padding:12px 16px;align-items:center;gap:12px;position:sticky;top:0;z-index:50;}
+.mobile-wordmark{font-family:var(--font-display);font-size:13px;font-weight:700;color:#fff;flex:1;}
+.mobile-avatar{width:27px;height:27px;border-radius:50%;background:rgba(255,255,255,0.12);display:flex;align-items:center;justify-content:center;font-size:10.5px;font-weight:700;color:rgba(255,255,255,0.8);}
+
+/* AI PANEL */
+.ai-panel-wrapper{position:fixed;bottom:0;right:0;width:340px;z-index:200;transition:transform 280ms cubic-bezier(0.34,1.2,0.64,1);}
+.ai-panel-wrapper.collapsed{transform:translateY(calc(100% - var(--ai-h)));}
+.ai-panel{background:var(--brand-deep);border-radius:var(--r-lg) var(--r-lg) 0 0;overflow:hidden;box-shadow:0 -3px 20px rgba(0,6,43,0.18);}
+.ai-panel-header{padding:0 14px;display:flex;align-items:center;gap:10px;cursor:pointer;user-select:none;height:var(--ai-h);}
+.ai-dot-pulse{display:flex;gap:3px;align-items:center;}
+.ai-dot-pulse span{width:4px;height:4px;border-radius:50%;background:rgba(255,255,255,0.3);animation:dpulse 1.4s ease-in-out infinite;}
+.ai-dot-pulse span:nth-child(2){animation-delay:0.2s;}
+.ai-dot-pulse span:nth-child(3){animation-delay:0.4s;}
+@keyframes dpulse{0%,80%,100%{background:rgba(255,255,255,0.15);transform:scale(0.8);}40%{background:rgba(255,255,255,0.75);transform:scale(1);}}
+.ai-panel-title{font-family:var(--font-display);font-size:11.5px;font-weight:600;color:#fff;flex:1;}
+.ai-status-dot{width:6px;height:6px;border-radius:50%;background:#79F2C0;flex-shrink:0;}
+.ai-panel-body{padding:0 13px 13px;}
+.ai-messages{max-height:200px;overflow-y:auto;margin-bottom:9px;display:flex;flex-direction:column;gap:7px;}
+.ai-msg{display:flex;gap:7px;align-items:flex-start;}
+.ai-msg-avatar{width:20px;height:20px;border-radius:50%;background:rgba(255,255,255,0.1);display:flex;align-items:center;justify-content:center;font-size:10px;flex-shrink:0;}
+.ai-msg-bubble{background:rgba(255,255,255,0.07);border-radius:0 var(--r-md) var(--r-md) var(--r-md);padding:6px 9px;font-size:11.5px;color:rgba(255,255,255,0.8);line-height:1.45;flex:1;white-space:pre-line;}
+.ai-msg.user .ai-msg-bubble{background:rgba(255,255,255,0.12);border-radius:var(--r-md) 0 var(--r-md) var(--r-md);}
+.ai-msg.user{flex-direction:row-reverse;}
+.ai-input-row{display:flex;gap:6px;align-items:center;margin-top:8px;}
+.ai-input{flex:1;padding:7px 9px;background:rgba(255,255,255,0.07);border:1px solid rgba(255,255,255,0.12);border-radius:var(--r-md);font-family:var(--font-body);font-size:11.5px;color:#fff;outline:none;}
+.ai-input::placeholder{color:rgba(255,255,255,0.3);}
+.ai-input:focus{border-color:rgba(255,255,255,0.3);}
+.ai-send-btn{width:28px;height:28px;background:rgba(255,255,255,0.12);border:none;border-radius:var(--r-sm);color:#fff;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:13px;flex-shrink:0;}
+.ai-send-btn:hover{background:rgba(255,255,255,0.2);}
+
+/* NLI ACTION CARD inside AI panel */
+.nli-action-card{background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.12);border-radius:var(--r-md);padding:10px 11px;margin:6px 0;}
+.nli-card-label{font-size:9px;font-weight:600;letter-spacing:0.1em;text-transform:uppercase;color:rgba(255,255,255,0.3);margin-bottom:4px;}
+.nli-card-action{font-size:12px;font-weight:700;color:#fff;margin-bottom:2px;}
+.nli-card-detail{font-size:11px;color:rgba(255,255,255,0.55);margin-bottom:8px;line-height:1.4;}
+.nli-conf-row{display:flex;align-items:center;gap:5px;margin-bottom:8px;}
+.nli-conf-bar{flex:1;height:2px;background:rgba(255,255,255,0.1);border-radius:1px;overflow:hidden;}
+.nli-conf-fill{height:100%;border-radius:1px;}
+.nli-conf-label{font-size:9px;font-weight:600;min-width:24px;text-align:right;}
+.nli-btns{display:flex;gap:6px;}
+.nli-btn{flex:1;padding:6px 8px;border-radius:var(--r-sm);font-family:var(--font-body);font-size:11.5px;font-weight:600;cursor:pointer;border:none;transition:all 130ms;}
+.nli-btn-cancel{background:rgba(255,255,255,0.06);color:rgba(255,255,255,0.45);border:1px solid rgba(255,255,255,0.1);}
+.nli-btn-cancel:hover{background:rgba(255,255,255,0.1);}
+.nli-btn-confirm{background:rgba(0,135,90,0.3);color:#79F2C0;border:1px solid rgba(0,135,90,0.25);}
+.nli-btn-confirm:hover{background:rgba(0,135,90,0.45);}
+.nli-clarify{background:rgba(184,134,11,0.15);border:1px solid rgba(184,134,11,0.2);border-radius:var(--r-md);padding:8px 10px;margin:5px 0;font-size:11px;color:rgba(255,218,128,0.85);line-height:1.45;white-space:pre-line;}
+.nli-refused{background:rgba(192,57,43,0.15);border:1px solid rgba(192,57,43,0.2);border-radius:var(--r-md);padding:8px 10px;margin:5px 0;font-size:11px;color:rgba(255,160,140,0.9);line-height:1.45;}
+
+/* MOBILE AI — above bottom nav */
+@media(max-width:768px){
+  .ai-panel-wrapper{width:100%;right:0;left:0;bottom:var(--nav-h);}
+  .ai-panel-wrapper.collapsed{transform:translateY(calc(100% - var(--ai-h)));}
+  .ai-panel{border-radius:var(--r-lg) var(--r-lg) 0 0;}
+}
+
+/* MOBILE PREVIEW OVERLAY */
+.mobile-preview-overlay{position:fixed;inset:0;background:rgba(0,6,43,0.65);z-index:500;display:none;align-items:center;justify-content:center;}
+.mobile-preview-overlay.open{display:flex;}
+.mobile-preview-frame{width:390px;height:844px;background:var(--brand-grey-10);border-radius:38px;overflow:hidden;box-shadow:0 0 0 9px #111,0 28px 70px rgba(0,0,0,0.45);position:relative;display:flex;flex-direction:column;}
+.mobile-status-bar{background:var(--brand-deep);padding:11px 20px 7px;display:flex;justify-content:space-between;font-size:10.5px;color:rgba(255,255,255,0.7);font-family:var(--font-mono);flex-shrink:0;}
+.mobile-frame-inner{flex:1;overflow-y:auto;overflow-x:hidden;display:flex;flex-direction:column;}
+.mobile-exit-btn{position:fixed;top:18px;right:18px;z-index:510;background:#fff;border:none;border-radius:18px;padding:5px 13px;font-family:var(--font-body);font-size:11.5px;cursor:pointer;font-weight:500;box-shadow:0 2px 8px rgba(0,0,0,0.2);}
+
+/* RESPONSIVE */
+@media(max-width:768px){
+  .sidebar{display:none;}
+  .main-content{margin-left:0;}
+  .mobile-nav{display:block;}
+  .mobile-topbar{display:flex;}
+  .topbar{display:none;}
+  .page-body{padding:14px 13px 120px;}
+  .panel-grid{grid-template-columns:1fr;}
+  .stat-grid{grid-template-columns:1fr 1fr;}
+  .data-table th,.data-table td{padding:7px 9px;font-size:11.5px;}
+  .page-header{flex-direction:column;align-items:flex-start;}
+}
+
+/* AUDIT TRAIL */
+.audit-row{padding:12px 16px;border-bottom:1px solid var(--border);cursor:pointer;transition:background 120ms;}
+.audit-row:hover{background:var(--brand-grey-05);}
+.audit-row:last-child{border-bottom:none;}
+.audit-event-type{font-size:10px;font-weight:600;letter-spacing:0.07em;text-transform:uppercase;color:var(--brand-grey-60);margin-bottom:3px;display:flex;align-items:center;gap:6px;}
+.audit-nli-tag{font-size:9px;font-weight:700;background:var(--brand-deep);color:rgba(255,255,255,0.7);padding:1px 5px;border-radius:3px;letter-spacing:0.04em;}
+.audit-nli-block{background:var(--brand-deep);border-radius:var(--r-md);padding:14px 16px;margin-bottom:14px;}
+.audit-nli-block-label{font-size:9px;letter-spacing:0.1em;text-transform:uppercase;color:rgba(255,255,255,0.3);margin-bottom:8px;font-weight:600;}
+.audit-nli-field{margin-bottom:9px;}
+.audit-nli-field:last-child{margin-bottom:0;}
+.audit-nli-field-label{font-size:9px;color:rgba(255,255,255,0.35);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:2px;}
+.audit-nli-field-value{font-family:var(--font-mono);font-size:11px;color:rgba(255,255,255,0.85);line-height:1.45;word-break:break-all;}
+
+/* METRIC ROW */
+.metric-row{display:flex;align-items:center;gap:14px;padding:12px 16px;border-bottom:1px solid var(--border);}
+.metric-row:last-child{border-bottom:none;}
+.metric-label-group{flex:1;}
+.metric-label{font-size:12.5px;color:var(--brand-grey);}
+.metric-sub{font-size:11px;color:var(--brand-grey-60);margin-top:1px;}
+.metric-bar-wrap{width:100px;height:4px;background:#E8E8ED;border-radius:2px;overflow:hidden;flex-shrink:0;}
+.metric-bar-fill{height:100%;border-radius:2px;}
+.metric-value{font-family:var(--font-mono);font-size:14px;font-weight:700;color:var(--brand-deep);min-width:44px;text-align:right;}
+.criteria-met{font-size:11px;font-weight:600;color:var(--pos);white-space:nowrap;}
+
+/* FUND ROW */
+.fund-row-name{font-weight:500;color:var(--brand-deep);}
+.fund-row-sub{font-size:10.5px;color:var(--brand-grey-60);margin-top:1px;}
+
+::-webkit-scrollbar{width:4px;height:4px;}
+::-webkit-scrollbar-track{background:transparent;}
+::-webkit-scrollbar-thumb{background:#CCC;border-radius:2px;}
+</style>
+</head>
+<body>
+
+<div class="screen active" id="screen-dashboard">
+<div class="app-layout">
+<aside class="sidebar">
+  <div class="sidebar-logo"><div class="wordmark">SimCorp Alternatives</div><div class="module-tag">LP Platform · Phase 2</div></div>
+  <div class="sidebar-module-switcher">
+    <button class="sidebar-module-btn active" onclick="showScreen('screen-dashboard')">Capital Ops</button>
+    <button class="sidebar-module-btn " onclick="showScreen('screen-ledger')">Lens</button>
+  </div>
+  <nav class="sidebar-nav">
+    <div class="nav-section-label">Capital Operations</div>
+    <div class="nav-item active" onclick="showScreen('screen-dashboard')"><span class="nav-icon">▤</span> Call Dashboard <span class="nav-badge">7</span></div>
+<div class="nav-item " onclick="showScreen('screen-intake')"><span class="nav-icon">↓</span> Notice Intake <span class="nav-badge">3</span></div>
+<div class="nav-item " onclick="showScreen('screen-approval')"><span class="nav-icon">✓</span> Approval Queue <span class="nav-badge">4</span></div>
+<div class="nav-item " onclick="showScreen('screen-funding')"><span class="nav-icon">⊡</span> Funding Instructions </div>
+<div class="nav-item " onclick="showScreen('screen-ledger')"><span class="nav-icon">≡</span> Capital Account Ledger </div>
+<div class="nav-item " onclick="showScreen('screen-overdue')"><span class="nav-icon">!</span> Overdue Alerts <span class="nav-badge">2</span></div>
+<div class="nav-section-label">Lens · Valuations</div><div class="nav-item" style="opacity:0.35;"><span class="nav-icon">∿</span> Valuation Engine</div><div class="nav-item" style="opacity:0.35;"><span class="nav-icon">◉</span> Portfolio Hierarchy</div><div class="nav-section-label">Phase 2 — NLI Active</div><div class="nav-item " onclick="showScreen('screen-nli-audit')"><span class="nav-icon">⊞</span> NLI Audit Trail </div>
+<div class="nav-item " onclick="showScreen('screen-nli-metrics')"><span class="nav-icon">∿</span> Adoption Metrics </div>
+
+  </nav>
+  <div class="sidebar-footer"><div class="user-row"><div class="user-avatar">PS</div><div style="flex:1;min-width:0;"><div class="user-name">Priya Sharma</div><div class="user-role">Operations Analyst</div></div></div></div>
+</aside>
+<div class="main-content">
+  <div class="mobile-topbar"><div class="mobile-wordmark">SimCorp Alternatives</div><div class="mobile-avatar">PS</div></div>
+  <div class="topbar">
+    <div class="topbar-breadcrumb"><span>Capital Operations</span><span>›</span><span class="current">Call Dashboard</span></div>
+    <div class="topbar-spacer"></div>
+    <div class="topbar-actions">
+      <div class="ibor-badge"><span class="ibor-live-dot"></span> IBOR Live</div>
+      <div style="font-size:10.5px;font-weight:600;padding:3px 8px;border-radius:3px;background:#EAF3EC;color:#1A5C2A;">● NLI Active</div>
+      <button class="view-switcher-pill" onclick="openMobilePreview('screen-dashboard')">📱 Mobile view</button>
+      <button class="btn btn-primary btn-sm" onclick="showScreen('screen-intake')">+ Process Notice</button>
+    </div>
+  </div>
+  <div class="page-body">
+    <div class="page-header">
+      <div><div class="page-title">Capital Call Dashboard</div><div class="page-subtitle">Q2 2026 · 75 active fund commitments · Phase 2 — NLI Enabled</div></div>
+      <div class="page-actions"><button class="btn btn-secondary btn-sm">↓ Export CSV</button></div>
+    </div>
+    <div class="stat-grid">
+      <div class="stat-card"><div class="stat-label">Active Calls</div><div class="stat-value">24</div><div class="stat-meta">↑ 5 new this week</div></div>
+      <div class="stat-card"><div class="stat-label">Pending Funding</div><div class="stat-value">7</div><div class="stat-meta">Due within 5 days</div></div>
+      <div class="stat-card"><div class="stat-label">Overdue</div><div class="stat-value neg">2</div><div class="stat-meta">Escalation active</div></div>
+      <div class="stat-card"><div class="stat-label">Total Committed (Q2)</div><div class="stat-value" style="font-size:17px;">€ 847.3M</div><div class="stat-meta">Across 18 funds</div></div>
+      <div class="stat-card"><div class="stat-label">STP Rate (30d)</div><div class="stat-value pos">72%</div><div class="stat-meta">Target 80% · ↑ +8pts</div></div>
+      <div class="stat-card"><div class="stat-label">NLI Adoption</div><div class="stat-value pos">30%</div><div class="stat-meta">Target 20% ✓ · <span style="cursor:pointer;text-decoration:underline;" onclick="showScreen('screen-nli-metrics')">View metrics</span></div></div>
+    </div>
+    <div class="table-card">
+      <div class="table-toolbar">
+        <span class="table-title">Active Capital Calls</span><span class="table-count">24</span>
+        <div class="toolbar-spacer"></div>
+        <input class="search-input" placeholder="Search fund, GP, amount…">
+        <button class="filter-btn">Status ▾</button>
+      </div>
+      <div style="overflow-x:auto;">
+        <table class="data-table">
+          <thead><tr><th>Fund / GP</th><th>Call Ref</th><th>Call Amount</th><th>Due Date</th><th>Status</th><th>Action</th></tr></thead>
+          <tbody>
+            <tr class="clickable" onclick="showScreen('screen-intake-detail')">
+              <td><div class="fund-row-name">Ares Capital Partners VI</div><div class="fund-row-sub">GP: Ares Management · EUR</div></td>
+              <td class="mono">ACP6-2026-Q2-001</td>
+              <td class="mono" style="font-weight:600;">€ 14,250,000</td>
+              <td><span style="color:var(--neg);font-weight:600;font-size:12px;">07 Apr 2026</span><div style="font-size:10px;color:var(--neg);">2 days overdue</div></td>
+              <td><span class="chip chip-overdue">Overdue</span></td>
+              <td><button class="btn btn-danger btn-sm" onclick="event.stopPropagation();showScreen('screen-funding')">Fund Now</button></td>
+            </tr>
+            <tr class="clickable" onclick="showScreen('screen-overdue')">
+              <td><div class="fund-row-name">Blackstone Credit Opportunities</div><div class="fund-row-sub">GP: Blackstone · USD</div></td>
+              <td class="mono">BCO-2026-0411</td>
+              <td class="mono" style="font-weight:600;">$ 22,500,000</td>
+              <td><span style="color:var(--neg);font-weight:600;font-size:12px;">05 Apr 2026</span><div style="font-size:10px;color:var(--neg);">4 days overdue</div></td>
+              <td><span class="chip chip-overdue">Overdue</span></td>
+              <td><button class="btn btn-danger btn-sm" onclick="event.stopPropagation();showScreen('screen-overdue')">View Alert</button></td>
+            </tr>
+            <tr class="clickable" onclick="showScreen('screen-approval')">
+              <td><div class="fund-row-name">Apollo European Principal Finance IV</div><div class="fund-row-sub">GP: Apollo Global · EUR</div></td>
+              <td class="mono">AEPF4-2026-0089</td>
+              <td class="mono" style="font-weight:600;">€ 9,800,000</td>
+              <td>11 Apr 2026<div style="font-size:10px;color:var(--brand-grey-60);">6 days left</div></td>
+              <td><span class="chip chip-review">Pending Approval</span></td>
+              <td><button class="btn btn-primary btn-sm" onclick="event.stopPropagation();showScreen('screen-approval')">Approve</button></td>
+            </tr>
+            <tr class="clickable" onclick="showScreen('screen-intake')">
+              <td><div class="fund-row-name">KKR Real Estate Finance Trust</div><div class="fund-row-sub">GP: KKR Credit · USD</div></td>
+              <td class="mono">KREFT-Q2-2026-12</td>
+              <td class="mono" style="font-weight:600;">$ 6,150,000</td>
+              <td>14 Apr 2026<div style="font-size:10px;color:var(--brand-grey-60);">9 days left</div></td>
+              <td><span class="chip chip-extracted">AI Extracted</span></td>
+              <td><button class="btn btn-secondary btn-sm" onclick="event.stopPropagation();showScreen('screen-intake')">Review Fields</button></td>
+            </tr>
+            <tr class="clickable">
+              <td><div class="fund-row-name">Carlyle Global Credit Fund III</div><div class="fund-row-sub">GP: Carlyle · GBP</div></td>
+              <td class="mono">CGCF3-2026-Q204</td>
+              <td class="mono" style="font-weight:600;">£ 11,400,000</td>
+              <td>18 Apr 2026<div style="font-size:10px;color:var(--brand-grey-60);">13 days left</div></td>
+              <td><span class="chip chip-approved">Approved</span></td>
+              <td><button class="btn btn-success btn-sm" onclick="showScreen('screen-funding')">Generate Wire</button></td>
+            </tr>
+            <tr class="clickable">
+              <td><div class="fund-row-name">Oaktree Opportunities Fund XII</div><div class="fund-row-sub">GP: Oaktree Capital · USD</div></td>
+              <td class="mono">OOF12-2026-0033</td>
+              <td class="mono" style="font-weight:600;">$ 18,750,000</td>
+              <td>22 Apr 2026<div style="font-size:10px;color:var(--brand-grey-60);">17 days left</div></td>
+              <td><span class="chip chip-approved">Approved</span></td>
+              <td><button class="btn btn-success btn-sm" onclick="showScreen('screen-funding')">Generate Wire</button></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <div style="padding:11px 16px;border-top:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;">
+        <span style="font-size:11.5px;color:var(--brand-grey-60);">Showing 6 of 24 calls</span>
+        <div style="display:flex;gap:6px;"><button class="btn btn-secondary btn-sm">← Prev</button><button class="btn btn-primary btn-sm">Next →</button></div>
+      </div>
+    </div>
+  </div>
+</div>
+<nav class="mobile-nav"><div class="mobile-nav-items"><button class="mobile-nav-item active" onclick="showScreen('screen-dashboard')"><span class="mob-icon">▤</span>Dashboard<span class="mobile-nav-badge">7</span></button>
+<button class="mobile-nav-item " onclick="showScreen('screen-intake')"><span class="mob-icon">↓</span>Intake<span class="mobile-nav-badge">3</span></button>
+<button class="mobile-nav-item " onclick="showScreen('screen-approval')"><span class="mob-icon">✓</span>Approvals</button>
+<button class="mobile-nav-item " onclick="showScreen('screen-nli-audit')"><span class="mob-icon">⊞</span>Audit</button>
+<button class="mobile-nav-item " onclick="showScreen('screen-overdue')"><span class="mob-icon">!</span>Alerts<span class="mobile-nav-badge">2</span></button>
+</div></nav>
+</div>
+<div class="ai-panel-wrapper collapsed" id="main-ai-panel">
+  <div class="ai-panel">
+    <div class="ai-panel-header" onclick="toggleAIPanel()">
+      <div class="ai-status-dot"></div>
+      <div class="ai-dot-pulse"><span></span><span></span><span></span></div>
+      <span class="ai-panel-title">AI Command Interface</span>
+      <span style="font-size:9px;background:rgba(0,135,90,0.25);color:#79F2C0;padding:2px 6px;border-radius:6px;font-weight:600;">Phase 2 Active</span>
+      <span style="color:rgba(255,255,255,0.3);font-size:11px;margin-left:4px;" id="ai-chevron">▲</span>
+    </div>
+    <div class="ai-panel-body">
+      <div class="ai-messages" id="ai-messages"></div>
+      <div style="font-size:9.5px;color:rgba(255,255,255,0.25);text-align:center;padding:2px 0 6px;">NLI Active · Compliance sign-off: ✓ PSP Investments · All actions legally attributed to you</div>
+      <div class="ai-input-row">
+        <input class="ai-input" id="nli-input" placeholder="e.g. approve Apollo call · show overdue · fund Carlyle…" onkeydown="if(event.key==='Enter')sendNLI()">
+        <button class="ai-send-btn" onclick="sendNLI()">↑</button>
+      </div>
+    </div>
+  </div>
+</div>
+</div>
+
+<div class="screen" id="screen-intake">
+<div class="app-layout">
+<aside class="sidebar">
+  <div class="sidebar-logo"><div class="wordmark">SimCorp Alternatives</div><div class="module-tag">LP Platform · Phase 2</div></div>
+  <div class="sidebar-module-switcher">
+    <button class="sidebar-module-btn active" onclick="showScreen('screen-dashboard')">Capital Ops</button>
+    <button class="sidebar-module-btn " onclick="showScreen('screen-ledger')">Lens</button>
+  </div>
+  <nav class="sidebar-nav"><div class="nav-section-label">Capital Operations</div><div class="nav-item " onclick="showScreen('screen-dashboard')"><span class="nav-icon">▤</span> Call Dashboard <span class="nav-badge">7</span></div>
+<div class="nav-item active" onclick="showScreen('screen-intake')"><span class="nav-icon">↓</span> Notice Intake <span class="nav-badge">3</span></div>
+<div class="nav-item " onclick="showScreen('screen-approval')"><span class="nav-icon">✓</span> Approval Queue <span class="nav-badge">4</span></div>
+<div class="nav-item " onclick="showScreen('screen-funding')"><span class="nav-icon">⊡</span> Funding Instructions </div>
+<div class="nav-item " onclick="showScreen('screen-ledger')"><span class="nav-icon">≡</span> Capital Account Ledger </div>
+<div class="nav-item " onclick="showScreen('screen-overdue')"><span class="nav-icon">!</span> Overdue Alerts <span class="nav-badge">2</span></div>
+<div class="nav-section-label">Lens · Valuations</div><div class="nav-item" style="opacity:0.35;"><span class="nav-icon">∿</span> Valuation Engine</div><div class="nav-item" style="opacity:0.35;"><span class="nav-icon">◉</span> Portfolio Hierarchy</div><div class="nav-section-label">Phase 2 — NLI Active</div><div class="nav-item " onclick="showScreen('screen-nli-audit')"><span class="nav-icon">⊞</span> NLI Audit Trail</div>
+<div class="nav-item " onclick="showScreen('screen-nli-metrics')"><span class="nav-icon">∿</span> Adoption Metrics</div>
+</nav>
+  <div class="sidebar-footer"><div class="user-row"><div class="user-avatar">PS</div><div style="flex:1;min-width:0;"><div class="user-name">Priya Sharma</div><div class="user-role">Operations Analyst</div></div></div></div>
+</aside>
+<div class="main-content">
+  <div class="mobile-topbar"><div class="mobile-wordmark">Notice Intake</div><div class="mobile-avatar">PS</div></div>
+  <div class="topbar">
+    <div class="topbar-breadcrumb"><span style="cursor:pointer;" onclick="showScreen('screen-dashboard')">Capital Operations</span><span>›</span><span class="current">Notice Intake</span></div>
+    <div class="topbar-spacer"></div>
+    <div class="topbar-actions">
+      <div class="ibor-badge"><span class="ibor-live-dot"></span> IBOR Live</div>
+      <button class="view-switcher-pill" onclick="openMobilePreview('screen-intake')">📱 Mobile view</button>
+      <button class="btn btn-primary btn-sm">+ Upload Notice PDF</button>
+    </div>
+  </div>
+  <div class="page-body">
+    <div class="page-header"><div><div class="page-title">Notice Intake Queue</div><div class="page-subtitle">AI-Assisted Extraction · Document Intelligence Engine v2.4</div></div></div>
+    <div class="alert alert-info"><span class="alert-icon">ℹ</span><span><strong>3 notices</strong> awaiting field review. Confidence scores shown per field. Flagged fields require manual confirmation before submission.</span></div>
+    <div class="table-card">
+      <div class="table-toolbar"><span class="table-title">Extracted Notices</span><span class="table-count">3 pending</span></div>
+      <div style="overflow-x:auto;">
+        <table class="data-table">
+          <thead><tr><th>Source / GP</th><th>Received</th><th>Overall Confidence</th><th>Flags</th><th>Status</th><th>Action</th></tr></thead>
+          <tbody>
+            <tr class="clickable" onclick="showScreen('screen-intake-detail')">
+              <td><div class="fund-row-name">KKR Real Estate Finance Trust</div><div class="fund-row-sub">notice@kkr-credit.com · PDF</div></td>
+              <td><span class="mono" style="font-size:11.5px;">05 Apr 09:14</span></td>
+              <td><div class="confidence-bar"><div class="confidence-track"><div class="confidence-fill conf-medium" style="width:78%"></div></div><span class="confidence-pct conf-medium-txt">78%</span></div></td>
+              <td><span class="chip chip-pending">2 flags</span></td>
+              <td><span class="chip chip-extracted">Extracted</span></td>
+              <td><button class="btn btn-primary btn-sm" onclick="event.stopPropagation();showScreen('screen-intake-detail')">Review →</button></td>
+            </tr>
+            <tr class="clickable" onclick="showScreen('screen-intake-detail')">
+              <td><div class="fund-row-name">Intermediate Capital Group IX</div><div class="fund-row-sub">capitalcalls@icgam.com · PDF</div></td>
+              <td><span class="mono" style="font-size:11.5px;">04 Apr 16:42</span></td>
+              <td><div class="confidence-bar"><div class="confidence-track"><div class="confidence-fill conf-medium" style="width:71%"></div></div><span class="confidence-pct conf-medium-txt">71%</span></div></td>
+              <td><span class="chip chip-pending">1 flag</span></td>
+              <td><span class="chip chip-extracted">Extracted</span></td>
+              <td><button class="btn btn-primary btn-sm" onclick="event.stopPropagation();showScreen('screen-intake-detail')">Review →</button></td>
+            </tr>
+            <tr class="clickable" onclick="showScreen('screen-intake-detail')">
+              <td><div class="fund-row-name">Bridgepoint Credit Opportunities III</div><div class="fund-row-sub">fund-admin@bridgepointam.eu · PDF</div></td>
+              <td><span class="mono" style="font-size:11.5px;">04 Apr 11:05</span></td>
+              <td><div class="confidence-bar"><div class="confidence-track"><div class="confidence-fill conf-low" style="width:52%"></div></div><span class="confidence-pct conf-low-txt">52%</span></div></td>
+              <td><span class="chip chip-overdue">4 flags</span></td>
+              <td><span class="chip chip-extracted">Extracted</span></td>
+              <td><button class="btn btn-primary btn-sm" onclick="event.stopPropagation();showScreen('screen-intake-detail')">Review →</button></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+<nav class="mobile-nav"><div class="mobile-nav-items"><button class="mobile-nav-item " onclick="showScreen('screen-dashboard')"><span class="mob-icon">▤</span>Dash<span class="mobile-nav-badge">7</span></button>
+<button class="mobile-nav-item active" onclick="showScreen('screen-intake')"><span class="mob-icon">↓</span>Intake<span class="mobile-nav-badge">3</span></button>
+<button class="mobile-nav-item " onclick="showScreen('screen-approval')"><span class="mob-icon">✓</span>Approve</button>
+<button class="mobile-nav-item " onclick="showScreen('screen-nli-audit')"><span class="mob-icon">⊞</span>Audit</button>
+<button class="mobile-nav-item " onclick="showScreen('screen-overdue')"><span class="mob-icon">!</span>Alerts<span class="mobile-nav-badge">2</span></button>
+</div></nav>
+</div></div>
+
+<!-- SCREEN 3: INTAKE DETAIL -->
+<div class="screen" id="screen-intake-detail">
+<div class="app-layout">
+<aside class="sidebar">
+  <div class="sidebar-logo"><div class="wordmark">SimCorp Alternatives</div><div class="module-tag">LP Platform · Phase 2</div></div>
+  <div class="sidebar-module-switcher">
+    <button class="sidebar-module-btn active" onclick="showScreen('screen-dashboard')">Capital Ops</button>
+    <button class="sidebar-module-btn " onclick="showScreen('screen-ledger')">Lens</button>
+  </div>
+  <nav class="sidebar-nav"><div class="nav-section-label">Capital Operations</div><div class="nav-item " onclick="showScreen('screen-dashboard')"><span class="nav-icon">▤</span> Call Dashboard <span class="nav-badge">7</span></div>
+<div class="nav-item active" onclick="showScreen('screen-intake')"><span class="nav-icon">↓</span> Notice Intake <span class="nav-badge">3</span></div>
+<div class="nav-item " onclick="showScreen('screen-approval')"><span class="nav-icon">✓</span> Approval Queue <span class="nav-badge">4</span></div>
+<div class="nav-item " onclick="showScreen('screen-funding')"><span class="nav-icon">⊡</span> Funding Instructions </div>
+<div class="nav-item " onclick="showScreen('screen-ledger')"><span class="nav-icon">≡</span> Capital Account Ledger </div>
+<div class="nav-item " onclick="showScreen('screen-overdue')"><span class="nav-icon">!</span> Overdue Alerts <span class="nav-badge">2</span></div>
+<div class="nav-section-label">Lens · Valuations</div><div class="nav-item" style="opacity:0.35;"><span class="nav-icon">∿</span> Valuation Engine</div><div class="nav-item" style="opacity:0.35;"><span class="nav-icon">◉</span> Portfolio Hierarchy</div><div class="nav-section-label">Phase 2 — NLI Active</div><div class="nav-item " onclick="showScreen('screen-nli-audit')"><span class="nav-icon">⊞</span> NLI Audit Trail</div>
+<div class="nav-item " onclick="showScreen('screen-nli-metrics')"><span class="nav-icon">∿</span> Adoption Metrics</div>
+</nav>
+  <div class="sidebar-footer"><div class="user-row"><div class="user-avatar">PS</div><div style="flex:1;min-width:0;"><div class="user-name">Priya Sharma</div><div class="user-role">Operations Analyst</div></div></div></div>
+</aside>
+<div class="main-content">
+  <div class="mobile-topbar"><div class="mobile-wordmark">Validate Notice</div><div class="mobile-avatar">PS</div></div>
+  <div class="topbar">
+    <div class="topbar-breadcrumb"><span style="cursor:pointer;" onclick="showScreen('screen-dashboard')">Capital Ops</span><span>›</span><span style="cursor:pointer;" onclick="showScreen('screen-intake')">Intake</span><span>›</span><span class="current">KKR REFT — Validate</span></div>
+    <div class="topbar-spacer"></div>
+    <div class="topbar-actions">
+      <button class="view-switcher-pill" onclick="openMobilePreview('screen-intake-detail')">📱 Mobile view</button>
+      <button class="btn btn-secondary btn-sm" onclick="showScreen('screen-intake')">← Back</button>
+    </div>
+  </div>
+  <div class="page-body">
+    <div class="page-header">
+      <div><div class="page-title">KKR Real Estate Finance Trust</div><div class="page-subtitle">KREFT-Q2-2026-12 · Received 05 Apr 2026 · Overall confidence: 78%</div></div>
+      <div class="page-actions"><span class="chip chip-extracted">AI Extracted</span><button class="btn btn-secondary btn-sm">View Source PDF</button></div>
+    </div>
+    <div class="alert alert-warning"><span class="alert-icon">⚑</span><span><strong>2 fields require attention</strong> — Due Date and Wire Reference extracted with lower confidence. Verify against source document before submitting.</span></div>
+    <div class="panel-grid">
+      <div class="panel">
+        <div class="panel-header"><span class="panel-title">Extracted Fields</span><span style="font-size:11px;color:var(--brand-grey-60);">Confidence per field</span></div>
+        <div style="padding:0;">
+          <div style="padding:11px 16px;border-bottom:1px solid #F3F3F6;">
+            <div style="display:flex;justify-content:space-between;margin-bottom:6px;"><label class="form-label" style="margin:0;">Fund Name</label><div class="confidence-bar" style="width:110px;"><div class="confidence-track"><div class="confidence-fill conf-high" style="width:98%"></div></div><span class="confidence-pct conf-high-txt">98%</span></div></div>
+            <input class="form-input" value="KKR Real Estate Finance Trust" readonly style="background:var(--brand-grey-05);">
+          </div>
+          <div style="padding:11px 16px;border-bottom:1px solid #F3F3F6;">
+            <div style="display:flex;justify-content:space-between;margin-bottom:6px;"><label class="form-label" style="margin:0;">Call Amount</label><div class="confidence-bar" style="width:110px;"><div class="confidence-track"><div class="confidence-fill conf-high" style="width:95%"></div></div><span class="confidence-pct conf-high-txt">95%</span></div></div>
+            <div style="display:flex;gap:7px;"><select class="form-select" style="width:76px;"><option>USD</option><option>EUR</option><option>GBP</option></select><input class="form-input mono" value="6,150,000.00" style="flex:1;"></div>
+          </div>
+          <div style="padding:11px 16px;border-bottom:1px solid #F3F3F6;background:#FDFAF3;">
+            <div style="display:flex;justify-content:space-between;margin-bottom:6px;"><label class="form-label" style="margin:0;">Due Date ⚑</label><div class="confidence-bar" style="width:110px;"><div class="confidence-track"><div class="confidence-fill conf-low" style="width:62%"></div></div><span class="confidence-pct conf-low-txt">62%</span></div></div>
+            <input class="form-input flagged mono" value="2026-04-14" type="date">
+            <div style="font-size:10.5px;color:var(--warn);margin-top:4px;">Extracted "14 April" but document also references "10 BD from issue" — please confirm</div>
+          </div>
+          <div style="padding:11px 16px;border-bottom:1px solid #F3F3F6;">
+            <div style="display:flex;justify-content:space-between;margin-bottom:6px;"><label class="form-label" style="margin:0;">Beneficiary Bank</label><div class="confidence-bar" style="width:110px;"><div class="confidence-track"><div class="confidence-fill conf-high" style="width:91%"></div></div><span class="confidence-pct conf-high-txt">91%</span></div></div>
+            <input class="form-input" value="JP Morgan Chase · New York" readonly style="background:var(--brand-grey-05);">
+          </div>
+          <div style="padding:11px 16px;background:#FDFAF3;">
+            <div style="display:flex;justify-content:space-between;margin-bottom:6px;"><label class="form-label" style="margin:0;">Wire Reference ⚑</label><div class="confidence-bar" style="width:110px;"><div class="confidence-track"><div class="confidence-fill conf-medium" style="width:69%"></div></div><span class="confidence-pct conf-medium-txt">69%</span></div></div>
+            <input class="form-input flagged mono" value="KREFT-Q2-2026-12-LP[PSP]">
+            <div style="font-size:10.5px;color:var(--warn);margin-top:4px;">LP identifier placeholder detected — verify your account reference format</div>
+          </div>
+        </div>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:14px;">
+        <div class="panel">
+          <div class="panel-header"><span class="panel-title">Maker-Checker Control</span></div>
+          <div class="panel-body">
+            <div class="approval-chain">
+              <div class="approval-step done"><div class="approval-node done">✓</div><div class="approval-label">AI Extract</div></div>
+              <div class="approval-step active"><div class="approval-node active">PS</div><div class="approval-label">Analyst Review<br><span style="font-size:9px;">You</span></div></div>
+              <div class="approval-step"><div class="approval-node">MK</div><div class="approval-label">Supervisor Approval</div></div>
+              <div class="approval-step"><div class="approval-node">⊡</div><div class="approval-label">Fund Instruction</div></div>
+            </div>
+            <div style="margin-top:11px;padding:9px 10px;background:var(--brand-grey-10);border-radius:var(--r-md);">
+              <div style="font-size:10.5px;color:var(--brand-grey-60);margin-bottom:3px;">Maker-Checker Rule</div>
+              <div style="font-size:12px;color:var(--brand-grey);">You cannot approve your own submission. Routes to <strong>Marcus Klein (Ops Supervisor)</strong>.</div>
+            </div>
+          </div>
+        </div>
+        <div class="panel">
+          <div class="panel-header"><span class="panel-title">Fund Registry Match</span></div>
+          <div class="panel-body">
+            <div class="field-row"><span class="field-label">Commitment</span><span class="field-value mono">$ 50,000,000</span></div>
+            <div class="field-row"><span class="field-label">Contributed</span><span class="field-value mono">$ 18,750,000</span></div>
+            <div class="field-row"><span class="field-label">Unfunded</span><span class="field-value mono">$ 31,250,000</span></div>
+            <div class="field-row"><span class="field-label">This Call</span><span class="field-value mono" style="font-weight:600;color:var(--brand-deep);">$ 6,150,000</span></div>
+            <div class="field-row"><span class="field-label">Post-Call Unfunded</span><span class="field-value mono">$ 25,100,000</span></div>
+            <div style="margin-top:10px;font-size:11px;color:var(--pos);">✓ Call amount within commitment balance</div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div style="display:flex;justify-content:flex-end;gap:9px;margin-top:4px;">
+      <button class="btn btn-secondary" onclick="showScreen('screen-intake')">← Back to Queue</button>
+      <button class="btn btn-secondary">Add Comment</button>
+      <button class="btn btn-primary btn-lg" onclick="showScreen('screen-approval')">Submit for Approval →</button>
+    </div>
+  </div>
+</div>
+<nav class="mobile-nav"><div class="mobile-nav-items"><button class="mobile-nav-item " onclick="showScreen('screen-dashboard')"><span class="mob-icon">▤</span>Dash<span class="mobile-nav-badge">7</span></button>
+<button class="mobile-nav-item active" onclick="showScreen('screen-intake')"><span class="mob-icon">↓</span>Intake<span class="mobile-nav-badge">3</span></button>
+<button class="mobile-nav-item " onclick="showScreen('screen-approval')"><span class="mob-icon">✓</span>Approve</button>
+<button class="mobile-nav-item " onclick="showScreen('screen-nli-audit')"><span class="mob-icon">⊞</span>Audit</button>
+<button class="mobile-nav-item " onclick="showScreen('screen-overdue')"><span class="mob-icon">!</span>Alerts<span class="mobile-nav-badge">2</span></button>
+</div></nav>
+</div></div>
+
+<div class="screen" id="screen-approval">
+<div class="app-layout">
+<aside class="sidebar"><div class="sidebar-logo"><div class="wordmark">SimCorp Alternatives</div><div class="module-tag">LP Platform · Phase 2</div></div><div class="sidebar-module-switcher"><button class="sidebar-module-btn active" onclick="showScreen('screen-dashboard')">Capital Ops</button><button class="sidebar-module-btn " onclick="showScreen('screen-ledger')">Lens</button></div><nav class="sidebar-nav"><div class="nav-section-label">Capital Operations</div><div class="nav-item " onclick="showScreen('screen-dashboard')"><span class="nav-icon">▤</span> Call Dashboard <span class="nav-badge">7</span></div>
+<div class="nav-item " onclick="showScreen('screen-intake')"><span class="nav-icon">↓</span> Notice Intake <span class="nav-badge">3</span></div>
+<div class="nav-item active" onclick="showScreen('screen-approval')"><span class="nav-icon">✓</span> Approval Queue <span class="nav-badge">4</span></div>
+<div class="nav-item " onclick="showScreen('screen-funding')"><span class="nav-icon">⊡</span> Funding Instructions </div>
+<div class="nav-item " onclick="showScreen('screen-ledger')"><span class="nav-icon">≡</span> Capital Account Ledger </div>
+<div class="nav-item " onclick="showScreen('screen-overdue')"><span class="nav-icon">!</span> Overdue Alerts <span class="nav-badge">2</span></div>
+<div class="nav-section-label">Lens · Valuations</div><div class="nav-item" style="opacity:0.35;"><span class="nav-icon">∿</span> Valuation Engine</div><div class="nav-item" style="opacity:0.35;"><span class="nav-icon">◉</span> Portfolio Hierarchy</div><div class="nav-section-label">Phase 2 — NLI Active</div><div class="nav-item " onclick="showScreen('screen-nli-audit')"><span class="nav-icon">⊞</span> NLI Audit Trail</div>
+<div class="nav-item " onclick="showScreen('screen-nli-metrics')"><span class="nav-icon">∿</span> Adoption Metrics</div>
+</nav><div class="sidebar-footer"><div class="user-row"><div class="user-avatar">MK</div><div style="flex:1;min-width:0;"><div class="user-name">Marcus Klein</div><div class="user-role">Ops Supervisor</div></div></div></div></aside>
+<div class="main-content">
+  <div class="mobile-topbar"><div class="mobile-wordmark">Approval Queue</div><div class="mobile-avatar">MK</div></div>
+  <div class="topbar">
+    <div class="topbar-breadcrumb"><span style="cursor:pointer;" onclick="showScreen('screen-dashboard')">Capital Operations</span><span>›</span><span class="current">Approval Queue</span></div>
+    <div class="topbar-spacer"></div>
+    <div class="topbar-actions">
+      <div class="ibor-badge"><span class="ibor-live-dot"></span> IBOR Live</div>
+      <button class="view-switcher-pill" onclick="openMobilePreview('screen-approval')">📱 Mobile view</button>
+    </div>
+  </div>
+  <div class="page-body">
+    <div class="page-header"><div><div class="page-title">Approval Queue</div><div class="page-subtitle">4 calls awaiting sign-off · Marcus Klein (Supervisor) · NLI-approved actions are legally attributed to you</div></div></div>
+    <div class="alert alert-info"><span class="alert-icon">ℹ</span><span>You cannot approve calls you submitted. Every approval — whether via UI or NLI — is immutably logged with your user ID and timestamp under AIFMD Article 75.</span></div>
+    <div style="display:flex;flex-direction:column;gap:12px;">
+      <div class="panel">
+        <div class="panel-header">
+          <div><div style="font-family:var(--font-display);font-size:13.5px;font-weight:700;color:var(--brand-deep);">Apollo European Principal Finance IV</div><div style="font-size:10.5px;color:var(--brand-grey-60);margin-top:2px;">AEPF4-2026-0089 · Submitted by Priya Sharma · 05 Apr 2026 14:20</div></div>
+          <span class="chip chip-review">Pending Approval</span>
+        </div>
+        <div class="panel-body">
+          <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:14px;margin-bottom:14px;">
+            <div><div class="stat-label">Call Amount</div><div style="font-family:var(--font-mono);font-size:18px;font-weight:700;color:var(--brand-deep);">€ 9,800,000</div></div>
+            <div><div class="stat-label">Due Date</div><div style="font-size:13px;font-weight:600;color:var(--brand-grey);">11 Apr 2026 <span style="font-size:10.5px;color:var(--pos);">6 days</span></div></div>
+            <div><div class="stat-label">Beneficiary</div><div style="font-size:12.5px;font-weight:500;">Deutsche Bank AG · Frankfurt</div></div>
+            <div><div class="stat-label">Extraction Confidence</div><div class="confidence-bar"><div class="confidence-track"><div class="confidence-fill conf-high" style="width:96%"></div></div><span class="confidence-pct conf-high-txt">96%</span></div></div>
+          </div>
+          <div style="display:flex;justify-content:flex-end;gap:8px;">
+            <button class="btn btn-secondary btn-sm">Add Comment</button>
+            <button class="btn btn-danger btn-sm">✗ Reject</button>
+            <button class="btn btn-success" onclick="openApproveModal('Apollo European Principal Finance IV','€ 9,800,000','AEPF4-2026-0089')">✓ Approve &amp; Route to Funding</button>
+          </div>
+        </div>
+      </div>
+      <div class="panel" style="border-color:#C07060;">
+        <div class="panel-header" style="background:#FBF3F2;">
+          <div><div style="font-family:var(--font-display);font-size:13.5px;font-weight:700;color:var(--neg);">Ares Capital Partners VI</div><div style="font-size:10.5px;color:var(--brand-grey-60);margin-top:2px;">ACP6-2026-Q2-001 · Submitted by James Chen · 03 Apr 2026 09:05</div></div>
+          <span class="chip chip-overdue">Overdue</span>
+        </div>
+        <div class="panel-body">
+          <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:14px;margin-bottom:14px;">
+            <div><div class="stat-label">Call Amount</div><div style="font-family:var(--font-mono);font-size:18px;font-weight:700;color:var(--neg);">€ 14,250,000</div></div>
+            <div><div class="stat-label">Due Date</div><div style="font-size:13px;font-weight:600;color:var(--neg);">07 Apr 2026 — OVERDUE</div></div>
+            <div><div class="stat-label">Beneficiary</div><div style="font-size:12.5px;font-weight:500;">BNP Paribas · Luxembourg</div></div>
+            <div><div class="stat-label">Confidence</div><div class="confidence-bar"><div class="confidence-track"><div class="confidence-fill conf-medium" style="width:78%"></div></div><span class="confidence-pct conf-medium-txt">78%</span></div></div>
+          </div>
+          <div class="alert alert-warning" style="margin-bottom:12px;"><span class="alert-icon">⚑</span><span>Flag reviewed: Due date confirmed via GP call. Urgent — T+1 escalation active.</span></div>
+          <div style="display:flex;justify-content:flex-end;gap:8px;">
+            <button class="btn btn-secondary btn-sm">Add Comment</button>
+            <button class="btn btn-danger btn-sm">✗ Reject</button>
+            <button class="btn btn-danger" onclick="openApproveModal('Ares Capital Partners VI','€ 14,250,000','ACP6-2026-Q2-001')">Approve (Urgent)</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<nav class="mobile-nav"><div class="mobile-nav-items"><button class="mobile-nav-item " onclick="showScreen('screen-dashboard')"><span class="mob-icon">▤</span>Dash<span class=mobile-nav-badge>7</span></button><button class="mobile-nav-item " onclick="showScreen('screen-intake')"><span class="mob-icon">↓</span>Intake<span class=mobile-nav-badge>3</span></button><button class="mobile-nav-item active" onclick="showScreen('screen-approval')"><span class="mob-icon">✓</span>Approve</button><button class="mobile-nav-item " onclick="showScreen('screen-nli-audit')"><span class="mob-icon">⊞</span>Audit</button><button class="mobile-nav-item " onclick="showScreen('screen-overdue')"><span class="mob-icon">!</span>Alerts<span class=mobile-nav-badge>2</span></button></div></nav>
+</div></div>
+
+<!-- SCREEN 5: FUNDING -->
+<div class="screen" id="screen-funding">
+<div class="app-layout">
+<aside class="sidebar"><div class="sidebar-logo"><div class="wordmark">SimCorp Alternatives</div><div class="module-tag">LP Platform · Phase 2</div></div><div class="sidebar-module-switcher"><button class="sidebar-module-btn active" onclick="showScreen('screen-dashboard')">Capital Ops</button><button class="sidebar-module-btn " onclick="showScreen('screen-ledger')">Lens</button></div><nav class="sidebar-nav"><div class="nav-section-label">Capital Operations</div><div class="nav-item " onclick="showScreen('screen-dashboard')"><span class="nav-icon">▤</span> Call Dashboard <span class="nav-badge">7</span></div>
+<div class="nav-item " onclick="showScreen('screen-intake')"><span class="nav-icon">↓</span> Notice Intake <span class="nav-badge">3</span></div>
+<div class="nav-item " onclick="showScreen('screen-approval')"><span class="nav-icon">✓</span> Approval Queue <span class="nav-badge">4</span></div>
+<div class="nav-item active" onclick="showScreen('screen-funding')"><span class="nav-icon">⊡</span> Funding Instructions </div>
+<div class="nav-item " onclick="showScreen('screen-ledger')"><span class="nav-icon">≡</span> Capital Account Ledger </div>
+<div class="nav-item " onclick="showScreen('screen-overdue')"><span class="nav-icon">!</span> Overdue Alerts <span class="nav-badge">2</span></div>
+<div class="nav-section-label">Lens · Valuations</div><div class="nav-item" style="opacity:0.35;"><span class="nav-icon">∿</span> Valuation Engine</div><div class="nav-item" style="opacity:0.35;"><span class="nav-icon">◉</span> Portfolio Hierarchy</div><div class="nav-section-label">Phase 2 — NLI Active</div><div class="nav-item " onclick="showScreen('screen-nli-audit')"><span class="nav-icon">⊞</span> NLI Audit Trail</div>
+<div class="nav-item " onclick="showScreen('screen-nli-metrics')"><span class="nav-icon">∿</span> Adoption Metrics</div>
+</nav><div class="sidebar-footer"><div class="user-row"><div class="user-avatar">MK</div><div style="flex:1;min-width:0;"><div class="user-name">Marcus Klein</div><div class="user-role">Ops Supervisor</div></div></div></div></aside>
+<div class="main-content">
+  <div class="mobile-topbar"><div class="mobile-wordmark">Funding Instruction</div><div class="mobile-avatar">MK</div></div>
+  <div class="topbar">
+    <div class="topbar-breadcrumb"><span style="cursor:pointer;" onclick="showScreen('screen-dashboard')">Capital Operations</span><span>›</span><span class="current">Funding Instruction</span></div>
+    <div class="topbar-spacer"></div>
+    <div class="topbar-actions">
+      <div class="ibor-badge"><span class="ibor-live-dot"></span> IBOR Live</div>
+      <button class="view-switcher-pill" onclick="openMobilePreview('screen-funding')">📱 Mobile view</button>
+    </div>
+  </div>
+  <div class="page-body">
+    <div class="page-header"><div><div class="page-title">Generate Funding Instruction</div><div class="page-subtitle">Carlyle Global Credit Fund III · CGCF3-2026-Q204 · Approved by Marcus Klein</div></div><span class="chip chip-approved">Approved</span></div>
+    <div class="panel-grid">
+      <div style="display:flex;flex-direction:column;gap:14px;">
+        <div class="wire-box">
+          <div class="wire-box-label">Generated Wire Instruction</div>
+          <div class="wire-field"><div class="wire-field-label">Amount</div><div class="wire-field-value amount">£ 11,400,000.00</div></div>
+          <div class="wire-divider"></div>
+          <div class="wire-field"><div class="wire-field-label">Beneficiary Bank</div><div class="wire-field-value">Barclays Bank PLC · London</div></div>
+          <div class="wire-field"><div class="wire-field-label">Account Name</div><div class="wire-field-value">Carlyle GCF III LP Account</div></div>
+          <div class="wire-field"><div class="wire-field-label">IBAN</div><div class="wire-field-value">GB29 NWBK 6016 1331 9268 19</div></div>
+          <div class="wire-field"><div class="wire-field-label">SWIFT</div><div class="wire-field-value">BARCGB22</div></div>
+          <div class="wire-divider"></div>
+          <div class="wire-field"><div class="wire-field-label">Payment Reference</div><div class="wire-field-value">CGCF3-2026-Q204-PSP-LP</div></div>
+          <div class="wire-field"><div class="wire-field-label">Value Date</div><div class="wire-field-value">18 Apr 2026</div></div>
+        </div>
+        <div class="panel">
+          <div class="panel-header"><span class="panel-title">Audit Trail Preview</span></div>
+          <div class="panel-body">
+            <div class="field-row"><span class="field-label">Event ID</span><span class="field-value mono">EVT-2026-0091-CC</span></div>
+            <div class="field-row"><span class="field-label">Timestamp (UTC)</span><span class="field-value mono">2026-04-05T11:34:22Z</span></div>
+            <div class="field-row"><span class="field-label">Action</span><span class="field-value">FUNDING_INSTRUCTION_GENERATED</span></div>
+            <div class="field-row"><span class="field-label">Responsible User</span><span class="field-value">Marcus Klein (MK-0081)</span></div>
+            <div class="field-row"><span class="field-label">IBOR Write-back</span><span class="field-value" style="color:var(--warn);">Pending confirmation</span></div>
+          </div>
+        </div>
+      </div>
+      <div class="panel">
+        <div class="panel-header"><span class="panel-title">Confirm Funding Instruction</span></div>
+        <div class="panel-body">
+          <div class="alert alert-warning"><span class="alert-icon">⚑</span><span>This initiates a <strong>£ 11,400,000</strong> wire transfer and IBOR write-back. Echo the fund name and amount to confirm.</span></div>
+          <div class="action-preview-card">
+            <div class="action-preview-label">Action Preview</div>
+            <div class="action-preview-action">Fund Call: CGCF3-2026-Q204</div>
+            <div class="action-preview-detail">Wire £ 11,400,000.00 to Barclays Bank PLC · CGCF3-2026-Q204-PSP-LP</div>
+            <div class="action-preview-echo">
+              <div class="echo-label">Echo fund name:</div>
+              <input class="echo-input" id="echo-fund" placeholder="Carlyle Global Credit Fund III" oninput="checkEcho()">
+              <div class="echo-label" style="margin-top:7px;">Echo amount:</div>
+              <input class="echo-input" id="echo-amount" placeholder="11400000" oninput="checkEcho()">
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Export Method</label>
+            <select class="form-select"><option>CSV / XLSX export (default)</option><option>Direct API push — Reval/ION TMS</option><option>SWIFT MT101</option></select>
+          </div>
+          <button class="btn btn-primary btn-lg" id="confirm-fund-btn" style="width:100%;opacity:0.3;cursor:not-allowed;" onclick="openFundedModal()" disabled>✓ Confirm &amp; Generate Instruction</button>
+          <div style="font-size:10px;color:var(--brand-grey-60);text-align:center;margin-top:5px;">Echo both fields to enable · Immutable audit record on confirm</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<nav class="mobile-nav"><div class="mobile-nav-items"><button class="mobile-nav-item " onclick="showScreen('screen-dashboard')"><span class="mob-icon">▤</span>Dash<span class=mobile-nav-badge>7</span></button><button class="mobile-nav-item " onclick="showScreen('screen-intake')"><span class="mob-icon">↓</span>Intake<span class=mobile-nav-badge>3</span></button><button class="mobile-nav-item " onclick="showScreen('screen-approval')"><span class="mob-icon">✓</span>Approve</button><button class="mobile-nav-item " onclick="showScreen('screen-nli-audit')"><span class="mob-icon">⊞</span>Audit</button><button class="mobile-nav-item " onclick="showScreen('screen-overdue')"><span class="mob-icon">!</span>Alerts<span class=mobile-nav-badge>2</span></button></div></nav>
+</div></div>
+
+<div class="screen" id="screen-ledger">
+<div class="app-layout">
+<aside class="sidebar"><div class="sidebar-logo"><div class="wordmark">SimCorp Alternatives</div><div class="module-tag">LP Platform · Phase 2</div></div><div class="sidebar-module-switcher"><button class="sidebar-module-btn " onclick="showScreen('screen-dashboard')">Capital Ops</button><button class="sidebar-module-btn active" onclick="showScreen('screen-ledger')">Lens</button></div><nav class="sidebar-nav"><div class="nav-section-label">Capital Operations</div><div class="nav-item " onclick="showScreen('screen-dashboard')"><span class="nav-icon">▤</span> Call Dashboard <span class="nav-badge">7</span></div>
+<div class="nav-item " onclick="showScreen('screen-intake')"><span class="nav-icon">↓</span> Notice Intake <span class="nav-badge">3</span></div>
+<div class="nav-item " onclick="showScreen('screen-approval')"><span class="nav-icon">✓</span> Approval Queue <span class="nav-badge">4</span></div>
+<div class="nav-item " onclick="showScreen('screen-funding')"><span class="nav-icon">⊡</span> Funding Instructions </div>
+<div class="nav-item active" onclick="showScreen('screen-ledger')"><span class="nav-icon">≡</span> Capital Account Ledger </div>
+<div class="nav-item " onclick="showScreen('screen-overdue')"><span class="nav-icon">!</span> Overdue Alerts <span class="nav-badge">2</span></div>
+<div class="nav-section-label">Lens · Valuations</div><div class="nav-item" style="opacity:0.35;"><span class="nav-icon">∿</span> Valuation Engine</div><div class="nav-item" style="opacity:0.35;"><span class="nav-icon">◉</span> Portfolio Hierarchy</div><div class="nav-section-label">Phase 2 — NLI Active</div><div class="nav-item " onclick="showScreen('screen-nli-audit')"><span class="nav-icon">⊞</span> NLI Audit Trail</div>
+<div class="nav-item " onclick="showScreen('screen-nli-metrics')"><span class="nav-icon">∿</span> Adoption Metrics</div>
+</nav><div class="sidebar-footer"><div class="user-row"><div class="user-avatar">PS</div><div style="flex:1;min-width:0;"><div class="user-name">Priya Sharma</div><div class="user-role">Operations Analyst</div></div></div></div></aside>
+<div class="main-content">
+  <div class="mobile-topbar"><div class="mobile-wordmark">Capital Account Ledger</div><div class="mobile-avatar">PS</div></div>
+  <div class="topbar">
+    <div class="topbar-breadcrumb"><span style="cursor:pointer;" onclick="showScreen('screen-dashboard')">Capital Operations</span><span>›</span><span class="current">Capital Account Ledger</span></div>
+    <div class="topbar-spacer"></div>
+    <div class="topbar-actions">
+      <div class="ibor-badge"><span class="ibor-live-dot"></span> IBOR Live</div>
+      <button class="view-switcher-pill" onclick="openMobilePreview('screen-ledger')">📱 Mobile view</button>
+      <button class="btn btn-secondary btn-sm">↓ Export Ledger</button>
+    </div>
+  </div>
+  <div class="page-body">
+    <div class="page-header"><div><div class="page-title">Capital Account Ledger</div><div class="page-subtitle">75 active fund commitments · IBOR write-back p99 ≤ 11 min · As of 05 Apr 2026</div></div></div>
+    <div class="stat-grid">
+      <div class="stat-card"><div class="stat-label">Total Committed</div><div class="stat-value" style="font-size:18px;">€ 2.84B</div><div class="stat-meta">75 funds</div></div>
+      <div class="stat-card"><div class="stat-label">Contributed Capital</div><div class="stat-value" style="font-size:18px;">€ 1.62B</div><div class="stat-meta">↑ € 6.15M this week</div></div>
+      <div class="stat-card"><div class="stat-label">Total Unfunded</div><div class="stat-value" style="font-size:18px;">€ 1.22B</div><div class="stat-meta">43% of total commitment</div></div>
+      <div class="stat-card"><div class="stat-label">IBOR Reconciliation</div><div class="stat-value">99.1%</div><div class="stat-meta">3 pending write-backs</div></div>
+    </div>
+    <div class="table-card">
+      <div class="table-toolbar"><span class="table-title">Fund Commitment Register</span><span class="table-count">75 funds</span><div class="toolbar-spacer"></div><input class="search-input" placeholder="Search fund or GP…"><button class="filter-btn">Vintage ▾</button></div>
+      <div style="overflow-x:auto;">
+        <table class="data-table">
+          <thead><tr><th>Fund</th><th>Vintage</th><th>Committed</th><th>Contributed</th><th>Unfunded</th><th>% Called</th><th>IBOR Status</th><th>Last Call</th></tr></thead>
+          <tbody>
+            <tr>
+              <td><div class="fund-row-name">Ares Capital Partners VI</div><div class="fund-row-sub">Ares Management · EUR · Private Debt</div></td>
+              <td class="mono">2023</td><td class="mono">€ 100,000,000</td><td class="mono">€ 62,300,000</td><td class="mono">€ 37,700,000</td>
+              <td><div style="display:flex;align-items:center;gap:7px;"><div class="progress-bar-wrap" style="width:80px;display:inline-block;"><div class="progress-bar-fill" style="width:62%;background:var(--brand-deep);"></div></div><span class="mono" style="font-size:11px;color:var(--brand-grey-60);">62%</span></div></td>
+              <td><span class="chip chip-overdue">Pending</span></td>
+              <td class="mono" style="font-size:11px;">07 Apr 2026</td>
+            </tr>
+            <tr>
+              <td><div class="fund-row-name">Blackstone Credit Opportunities</div><div class="fund-row-sub">Blackstone · USD · Direct Lending</div></td>
+              <td class="mono">2022</td><td class="mono">$ 150,000,000</td><td class="mono">$ 112,500,000</td><td class="mono">$ 37,500,000</td>
+              <td><div style="display:flex;align-items:center;gap:7px;"><div class="progress-bar-wrap" style="width:80px;display:inline-block;"><div class="progress-bar-fill" style="width:75%;background:var(--brand-deep);"></div></div><span class="mono" style="font-size:11px;color:var(--brand-grey-60);">75%</span></div></td>
+              <td><span class="chip chip-overdue">Pending</span></td>
+              <td class="mono" style="font-size:11px;">05 Apr 2026</td>
+            </tr>
+            <tr>
+              <td><div class="fund-row-name">Apollo European Principal Finance IV</div><div class="fund-row-sub">Apollo Global · EUR · Senior Secured</div></td>
+              <td class="mono">2023</td><td class="mono">€ 80,000,000</td><td class="mono">€ 41,600,000</td><td class="mono">€ 38,400,000</td>
+              <td><div style="display:flex;align-items:center;gap:7px;"><div class="progress-bar-wrap" style="width:80px;display:inline-block;"><div class="progress-bar-fill" style="width:52%;background:var(--brand-deep);"></div></div><span class="mono" style="font-size:11px;color:var(--brand-grey-60);">52%</span></div></td>
+              <td><span class="chip chip-approved">Synced</span></td>
+              <td class="mono" style="font-size:11px;">05 Apr 2026</td>
+            </tr>
+            <tr>
+              <td><div class="fund-row-name">Carlyle Global Credit Fund III</div><div class="fund-row-sub">Carlyle · GBP · Mezzanine</div></td>
+              <td class="mono">2021</td><td class="mono">£ 75,000,000</td><td class="mono">£ 60,750,000</td><td class="mono">£ 14,250,000</td>
+              <td><div style="display:flex;align-items:center;gap:7px;"><div class="progress-bar-wrap" style="width:80px;display:inline-block;"><div class="progress-bar-fill" style="width:81%;background:var(--brand-deep);"></div></div><span class="mono" style="font-size:11px;color:var(--brand-grey-60);">81%</span></div></td>
+              <td><span class="chip chip-approved">Synced</span></td>
+              <td class="mono" style="font-size:11px;">01 Apr 2026</td>
+            </tr>
+            <tr>
+              <td><div class="fund-row-name">Oaktree Opportunities Fund XII</div><div class="fund-row-sub">Oaktree Capital · USD · Distressed</div></td>
+              <td class="mono">2024</td><td class="mono">$ 120,000,000</td><td class="mono">$ 26,400,000</td><td class="mono">$ 93,600,000</td>
+              <td><div style="display:flex;align-items:center;gap:7px;"><div class="progress-bar-wrap" style="width:80px;display:inline-block;"><div class="progress-bar-fill" style="width:22%;background:var(--brand-deep);"></div></div><span class="mono" style="font-size:11px;color:var(--brand-grey-60);">22%</span></div></td>
+              <td><span class="chip chip-approved">Synced</span></td>
+              <td class="mono" style="font-size:11px;">22 Mar 2026</td>
+            </tr>
+            <tr>
+              <td><div class="fund-row-name">KKR Real Estate Finance Trust</div><div class="fund-row-sub">KKR Credit · USD · Real Estate Debt</div></td>
+              <td class="mono">2022</td><td class="mono">$ 50,000,000</td><td class="mono">$ 18,750,000</td><td class="mono">$ 31,250,000</td>
+              <td><div style="display:flex;align-items:center;gap:7px;"><div class="progress-bar-wrap" style="width:80px;display:inline-block;"><div class="progress-bar-fill" style="width:38%;background:var(--brand-deep);"></div></div><span class="mono" style="font-size:11px;color:var(--brand-grey-60);">38%</span></div></td>
+              <td><span class="chip chip-review">In Review</span></td>
+              <td class="mono" style="font-size:11px;">05 Apr 2026</td>
+            </tr>
+
+          </tbody>
+        </table>
+      </div>
+      <div style="padding:11px 16px;border-top:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;">
+        <span style="font-size:11.5px;color:var(--brand-grey-60);">Showing 6 of 75 funds</span>
+        <div style="display:flex;gap:6px;"><button class="btn btn-secondary btn-sm">← Prev</button><button class="btn btn-primary btn-sm">Next →</button></div>
+      </div>
+    </div>
+  </div>
+</div>
+<nav class="mobile-nav"><div class="mobile-nav-items"><button class="mobile-nav-item " onclick="showScreen('screen-dashboard')"><span class="mob-icon">▤</span>Dash<span class=mobile-nav-badge>7</span></button><button class="mobile-nav-item " onclick="showScreen('screen-intake')"><span class="mob-icon">↓</span>Intake<span class=mobile-nav-badge>3</span></button><button class="mobile-nav-item " onclick="showScreen('screen-approval')"><span class="mob-icon">✓</span>Approve</button><button class="mobile-nav-item " onclick="showScreen('screen-nli-audit')"><span class="mob-icon">⊞</span>Audit</button><button class="mobile-nav-item " onclick="showScreen('screen-overdue')"><span class="mob-icon">!</span>Alerts<span class=mobile-nav-badge>2</span></button></div></nav>
+</div></div>
+
+<!-- SCREEN 7: OVERDUE -->
+<div class="screen" id="screen-overdue">
+<div class="app-layout">
+<aside class="sidebar"><div class="sidebar-logo"><div class="wordmark">SimCorp Alternatives</div><div class="module-tag">LP Platform · Phase 2</div></div><div class="sidebar-module-switcher"><button class="sidebar-module-btn active" onclick="showScreen('screen-dashboard')">Capital Ops</button><button class="sidebar-module-btn " onclick="showScreen('screen-ledger')">Lens</button></div><nav class="sidebar-nav"><div class="nav-section-label">Capital Operations</div><div class="nav-item " onclick="showScreen('screen-dashboard')"><span class="nav-icon">▤</span> Call Dashboard <span class="nav-badge">7</span></div>
+<div class="nav-item " onclick="showScreen('screen-intake')"><span class="nav-icon">↓</span> Notice Intake <span class="nav-badge">3</span></div>
+<div class="nav-item " onclick="showScreen('screen-approval')"><span class="nav-icon">✓</span> Approval Queue <span class="nav-badge">4</span></div>
+<div class="nav-item " onclick="showScreen('screen-funding')"><span class="nav-icon">⊡</span> Funding Instructions </div>
+<div class="nav-item " onclick="showScreen('screen-ledger')"><span class="nav-icon">≡</span> Capital Account Ledger </div>
+<div class="nav-item active" onclick="showScreen('screen-overdue')"><span class="nav-icon">!</span> Overdue Alerts <span class="nav-badge">2</span></div>
+<div class="nav-section-label">Lens · Valuations</div><div class="nav-item" style="opacity:0.35;"><span class="nav-icon">∿</span> Valuation Engine</div><div class="nav-item" style="opacity:0.35;"><span class="nav-icon">◉</span> Portfolio Hierarchy</div><div class="nav-section-label">Phase 2 — NLI Active</div><div class="nav-item " onclick="showScreen('screen-nli-audit')"><span class="nav-icon">⊞</span> NLI Audit Trail</div>
+<div class="nav-item " onclick="showScreen('screen-nli-metrics')"><span class="nav-icon">∿</span> Adoption Metrics</div>
+</nav><div class="sidebar-footer"><div class="user-row"><div class="user-avatar">PS</div><div style="flex:1;min-width:0;"><div class="user-name">Priya Sharma</div><div class="user-role">Operations Analyst</div></div></div></div></aside>
+<div class="main-content">
+  <div class="mobile-topbar"><div class="mobile-wordmark">Overdue Alerts</div><div class="mobile-avatar">PS</div></div>
+  <div class="topbar">
+    <div class="topbar-breadcrumb"><span style="cursor:pointer;" onclick="showScreen('screen-dashboard')">Capital Operations</span><span>›</span><span class="current">Overdue Alerts</span></div>
+    <div class="topbar-spacer"></div>
+    <div class="topbar-actions">
+      <div class="ibor-badge"><span class="ibor-live-dot"></span> IBOR Live</div>
+      <button class="view-switcher-pill" onclick="openMobilePreview('screen-overdue')">📱 Mobile view</button>
+    </div>
+  </div>
+  <div class="page-body">
+    <div class="page-header"><div><div class="page-title">Overdue Alerts</div><div class="page-subtitle">Escalating notification schedule · Configurable per LP account</div></div></div>
+    <div class="alert alert-error"><span class="alert-icon">!</span><span><strong>2 capital calls are past their due date.</strong> Escalation protocols are active. A missed call may trigger LP default provisions.</span></div>
+    <div class="panel" style="border-color:#C07060;margin-bottom:14px;">
+      <div class="panel-header" style="background:#FBF3F2;">
+        <div><div style="font-family:var(--font-display);font-size:13.5px;font-weight:700;color:var(--neg);">Blackstone Credit Opportunities</div><div style="font-size:10.5px;color:var(--brand-grey-60);">BCO-2026-0411 · Due 05 Apr 2026 · <strong style="color:var(--neg);">4 days overdue</strong></div></div>
+        <div style="text-align:right;"><div style="font-family:var(--font-mono);font-size:19px;font-weight:700;color:var(--neg);">$ 22,500,000</div></div>
+      </div>
+      <div class="panel-body">
+        <div class="timeline-item"><div class="tl-dot tl-past">✓</div><div style="flex:1;"><div class="tl-time">01 Apr 2026 14:30 UTC</div><div class="tl-title">Notice Received &amp; Extracted</div><div class="tl-desc">AI extracted all 6 required fields with 94% confidence. No flags raised.</div></div></div>
+        <div class="timeline-item"><div class="tl-dot tl-past">✓</div><div style="flex:1;"><div class="tl-time">02 Apr 2026 09:15 UTC</div><div class="tl-title">Validated &amp; Submitted for Approval</div><div class="tl-desc">Priya Sharma submitted. Routed to Marcus Klein (Supervisor).</div></div></div>
+        <div class="timeline-item"><div class="tl-dot tl-current">!</div><div style="flex:1;"><div class="tl-time">05 Apr 2026 18:00 UTC — T+0 EOD</div><div class="tl-title" style="color:var(--neg);">Due Date Passed — T+0 Alert Sent</div><div class="tl-desc">Alert sent to Priya Sharma + Marcus Klein. Call awaiting funding confirmation.</div></div></div>
+        <div class="timeline-item"><div class="tl-dot tl-future" style="opacity:0.5;">↑</div><div style="flex:1;opacity:0.5;"><div class="tl-time">06 Apr 2026 09:00 UTC — T+1</div><div class="tl-title">Head of Operations Alert</div><div class="tl-desc">Adriana Voss (Head of Operations) notified if unresolved.</div></div></div>
+        <div class="timeline-item"><div class="tl-dot tl-future" style="opacity:0.5;">↑</div><div style="flex:1;opacity:0.5;"><div class="tl-time">07 Apr 2026 09:00 UTC — T+2</div><div class="tl-title">CIO-Level Escalation</div><div class="tl-desc">Jonathan Park (CIO) notified. Potential default provisions apply.</div></div></div>
+        <div style="display:flex;justify-content:flex-end;gap:8px;margin-top:8px;">
+          <button class="btn btn-secondary btn-sm">Log GP Contact</button>
+          <button class="btn btn-danger btn-lg" onclick="showScreen('screen-approval')">Rush Approve &amp; Fund</button>
+        </div>
+      </div>
+    </div>
+    <div class="panel" style="border-color:#C07060;">
+      <div class="panel-header" style="background:#FBF3F2;">
+        <div><div style="font-family:var(--font-display);font-size:13.5px;font-weight:700;color:var(--neg);">Ares Capital Partners VI</div><div style="font-size:10.5px;color:var(--brand-grey-60);">ACP6-2026-Q2-001 · Due 07 Apr 2026 · <strong style="color:var(--neg);">2 days overdue</strong></div></div>
+        <div style="text-align:right;"><div style="font-family:var(--font-mono);font-size:19px;font-weight:700;color:var(--neg);">€ 14,250,000</div></div>
+      </div>
+      <div class="panel-body">
+        <div class="alert alert-error"><span class="alert-icon">!</span><span>Stuck in approval queue. T+1 reaches Head of Operations in <strong>3 hours.</strong></span></div>
+        <div style="display:flex;justify-content:flex-end;gap:8px;"><button class="btn btn-secondary btn-sm">Log GP Contact</button><button class="btn btn-danger btn-lg" onclick="showScreen('screen-approval')">Rush Approve &amp; Fund</button></div>
+      </div>
+    </div>
+  </div>
+</div>
+<nav class="mobile-nav"><div class="mobile-nav-items"><button class="mobile-nav-item " onclick="showScreen('screen-dashboard')"><span class="mob-icon">▤</span>Dash<span class=mobile-nav-badge>7</span></button><button class="mobile-nav-item " onclick="showScreen('screen-intake')"><span class="mob-icon">↓</span>Intake<span class=mobile-nav-badge>3</span></button><button class="mobile-nav-item " onclick="showScreen('screen-approval')"><span class="mob-icon">✓</span>Approve</button><button class="mobile-nav-item " onclick="showScreen('screen-nli-audit')"><span class="mob-icon">⊞</span>Audit</button><button class="mobile-nav-item active" onclick="showScreen('screen-overdue')"><span class="mob-icon">!</span>Alerts<span class=mobile-nav-badge>2</span></button></div></nav>
+</div></div>
+
+<!-- SCREEN 8: NLI AUDIT TRAIL -->
+<div class="screen" id="screen-nli-audit">
+<div class="app-layout">
+<aside class="sidebar"><div class="sidebar-logo"><div class="wordmark">SimCorp Alternatives</div><div class="module-tag">LP Platform · Phase 2</div></div><div class="sidebar-module-switcher"><button class="sidebar-module-btn active" onclick="showScreen('screen-dashboard')">Capital Ops</button><button class="sidebar-module-btn " onclick="showScreen('screen-ledger')">Lens</button></div><nav class="sidebar-nav"><div class="nav-section-label">Capital Operations</div><div class="nav-item " onclick="showScreen('screen-dashboard')"><span class="nav-icon">▤</span> Call Dashboard <span class="nav-badge">7</span></div>
+<div class="nav-item " onclick="showScreen('screen-intake')"><span class="nav-icon">↓</span> Notice Intake <span class="nav-badge">3</span></div>
+<div class="nav-item " onclick="showScreen('screen-approval')"><span class="nav-icon">✓</span> Approval Queue <span class="nav-badge">4</span></div>
+<div class="nav-item " onclick="showScreen('screen-funding')"><span class="nav-icon">⊡</span> Funding Instructions </div>
+<div class="nav-item " onclick="showScreen('screen-ledger')"><span class="nav-icon">≡</span> Capital Account Ledger </div>
+<div class="nav-item " onclick="showScreen('screen-overdue')"><span class="nav-icon">!</span> Overdue Alerts <span class="nav-badge">2</span></div>
+<div class="nav-section-label">Lens · Valuations</div><div class="nav-item" style="opacity:0.35;"><span class="nav-icon">∿</span> Valuation Engine</div><div class="nav-item" style="opacity:0.35;"><span class="nav-icon">◉</span> Portfolio Hierarchy</div><div class="nav-section-label">Phase 2 — NLI Active</div><div class="nav-item active" onclick="showScreen('screen-nli-audit')"><span class="nav-icon">⊞</span> NLI Audit Trail</div>
+<div class="nav-item " onclick="showScreen('screen-nli-metrics')"><span class="nav-icon">∿</span> Adoption Metrics</div>
+</nav><div class="sidebar-footer"><div class="user-row"><div class="user-avatar">AV</div><div style="flex:1;min-width:0;"><div class="user-name">Adriana Voss</div><div class="user-role">Head of Operations</div></div></div></div></aside>
+<div class="main-content">
+  <div class="mobile-topbar"><div class="mobile-wordmark">NLI Audit Trail</div><div class="mobile-avatar">AV</div></div>
+  <div class="topbar">
+    <div class="topbar-breadcrumb"><span style="cursor:pointer;" onclick="showScreen('screen-dashboard')">Capital Operations</span><span>›</span><span class="current">NLI Audit Trail</span></div>
+    <div class="topbar-spacer"></div>
+    <div class="topbar-actions">
+      <div class="ibor-badge"><span class="ibor-live-dot"></span> IBOR Live</div>
+      <div style="font-size:10.5px;font-weight:600;padding:3px 8px;border-radius:3px;background:#EAF3EC;color:#1A5C2A;">✓ Compliance Sign-off: PSP Investments</div>
+      <button class="view-switcher-pill" onclick="openMobilePreview('screen-nli-audit')">📱 Mobile view</button>
+      <button class="btn btn-secondary btn-sm">↓ Export Audit Log</button>
+    </div>
+  </div>
+  <div class="page-body">
+    <div class="page-header">
+      <div><div class="page-title">NLI Audit Trail</div><div class="page-subtitle">Immutable append-only log · 4 additional AIFMD fields per NLI action · Retained ≥ 7 years</div></div>
+    </div>
+    <div class="stat-grid">
+      <div class="stat-card"><div class="stat-label">NLI Actions (7d)</div><div class="stat-value">43</div><div class="stat-meta">of 141 total write actions</div></div>
+      <div class="stat-card"><div class="stat-label">NLI Adoption Rate</div><div class="stat-value pos">30%</div><div class="stat-meta">Target 20% at 60d ✓</div></div>
+      <div class="stat-card"><div class="stat-label">Ambiguity Rate</div><div class="stat-value">9.4%</div><div class="stat-meta">Target ≤ 12% ✓</div></div>
+      <div class="stat-card"><div class="stat-label">Reversal Rate</div><div class="stat-value pos">2.1%</div><div class="stat-meta">Target ≤ 5% ✓</div></div>
+      <div class="stat-card"><div class="stat-label">Audit Completeness</div><div class="stat-value pos">100%</div><div class="stat-meta">Zero gaps detected</div></div>
+    </div>
+    <div class="alert alert-success"><span class="alert-icon">✓</span><span><strong>NLI Compliance Sign-off received</strong> from Helena Mäkinen (Chief Compliance Officer, PSP Investments) on 04 Apr 2026. NLI audit schema satisfies AIFMD Article 75. Phase 3 enablement unblocked.</span></div>
+    <div style="display:grid;grid-template-columns:1fr 360px;gap:16px;">
+      <div class="table-card">
+        <div class="table-toolbar">
+          <span class="table-title">Audit Events</span><span class="table-count">43 NLI · 98 UI</span>
+          <div class="toolbar-spacer"></div>
+          <input class="search-input" placeholder="Search user, fund, event…">
+          <button class="filter-btn">Modality ▾</button>
+        </div>
+<div class="audit-row" onclick="showAuditDetail('EVT-2026-0091-CC')">
+  <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:3px;">
+    <div class="audit-event-type">FUNDING_INSTRUCTION_GENERATED<span class="audit-nli-tag">NLI</span></div>
+    <span class="mono" style="font-size:10.5px;color:var(--brand-grey-60);">2026-04-05 11:34:22Z</span>
+  </div>
+  <div style="font-size:12px;font-weight:500;color:var(--brand-deep);margin-bottom:2px;">Carlyle Global Credit Fund III · £ 11,400,000</div>
+  <div style="font-size:11px;color:var(--brand-grey-60);">Marcus Klein · "generate wire for Carlyle call" · Conf: 97%</div>
+</div><div class="audit-row" onclick="showAuditDetail('EVT-2026-0090-AP')">
+  <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:3px;">
+    <div class="audit-event-type">CALL_APPROVED<span class="audit-nli-tag">NLI</span></div>
+    <span class="mono" style="font-size:10.5px;color:var(--brand-grey-60);">2026-04-05 10:12:04Z</span>
+  </div>
+  <div style="font-size:12px;font-weight:500;color:var(--brand-deep);margin-bottom:2px;">Apollo European Principal Finance IV · € 9,800,000</div>
+  <div style="font-size:11px;color:var(--brand-grey-60);">Marcus Klein · "approve the Apollo call" · Conf: 91%</div>
+</div><div class="audit-row" onclick="showAuditDetail('EVT-2026-0089-UI')">
+  <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:3px;">
+    <div class="audit-event-type">CALL_SUBMITTED_FOR_APPROVAL</div>
+    <span class="mono" style="font-size:10.5px;color:var(--brand-grey-60);">2026-04-05 09:45:17Z</span>
+  </div>
+  <div style="font-size:12px;font-weight:500;color:var(--brand-deep);margin-bottom:2px;">KKR Real Estate Finance Trust · $ 6,150,000</div>
+  <div style="font-size:11px;color:var(--brand-grey-60);">Priya Sharma · UI action</div>
+</div><div class="audit-row" onclick="showAuditDetail('EVT-2026-0088-CL')">
+  <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:3px;">
+    <div class="audit-event-type">NLI_AMBIGUOUS_RESOLVED<span class="audit-nli-tag">NLI</span></div>
+    <span class="mono" style="font-size:10.5px;color:var(--brand-grey-60);">2026-04-04 16:22:38Z</span>
+  </div>
+  <div style="font-size:12px;font-weight:500;color:var(--brand-deep);margin-bottom:2px;">Resolved after 1 clarifying round-trip</div>
+  <div style="font-size:11px;color:var(--brand-grey-60);">Priya Sharma · "approve the call" · Conf: 78%</div>
+</div><div class="audit-row" onclick="showAuditDetail('EVT-2026-0087-RF')">
+  <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:3px;">
+    <div class="audit-event-type">NLI_INSTRUCTION_REFUSED<span class="audit-nli-tag">NLI</span></div>
+    <span class="mono" style="font-size:10.5px;color:var(--brand-grey-60);">2026-04-04 11:34:01Z</span>
+  </div>
+  <div style="font-size:12px;font-weight:500;color:var(--brand-deep);margin-bottom:2px;">Bank registry modification — refused</div>
+  <div style="font-size:11px;color:var(--brand-grey-60);">Priya Sharma · "change Ares bank account to…" · Conf: 99%</div>
+</div><div class="audit-row" onclick="showAuditDetail('EVT-2026-0086-UI')">
+  <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:3px;">
+    <div class="audit-event-type">CALL_APPROVED</div>
+    <span class="mono" style="font-size:10.5px;color:var(--brand-grey-60);">2026-04-04 15:09:55Z</span>
+  </div>
+  <div style="font-size:12px;font-weight:500;color:var(--brand-deep);margin-bottom:2px;">Oaktree Opportunities Fund XII · $ 18,750,000</div>
+  <div style="font-size:11px;color:var(--brand-grey-60);">Marcus Klein · UI action</div>
+</div><div class="audit-row" onclick="showAuditDetail('EVT-2026-0085-AP')">
+  <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:3px;">
+    <div class="audit-event-type">CALL_APPROVED<span class="audit-nli-tag">NLI</span></div>
+    <span class="mono" style="font-size:10.5px;color:var(--brand-grey-60);">2026-04-03 09:01:44Z</span>
+  </div>
+  <div style="font-size:12px;font-weight:500;color:var(--brand-deep);margin-bottom:2px;">Carlyle Global Credit Fund III · £ 11,400,000</div>
+  <div style="font-size:11px;color:var(--brand-grey-60);">Marcus Klein · "approve Carlyle GBP call" · Conf: 94%</div>
+</div>
+        <div style="padding:11px 16px;border-top:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;">
+          <span style="font-size:11.5px;color:var(--brand-grey-60);">Showing 7 of 141 events</span>
+          <div style="display:flex;gap:6px;"><button class="btn btn-secondary btn-sm">← Prev</button><button class="btn btn-primary btn-sm">Next →</button></div>
+        </div>
+      </div>
+      <div id="audit-detail-panel">
+        <div class="panel"><div class="panel-header"><span class="panel-title">Select an event to inspect</span></div>
+        <div class="panel-body" style="color:var(--brand-grey-60);font-size:12px;">Click any audit row to view the full record including NLI-specific AIFMD fields.</div></div>
+      </div>
+    </div>
+  </div>
+</div>
+<nav class="mobile-nav"><div class="mobile-nav-items"><button class="mobile-nav-item " onclick="showScreen('screen-dashboard')"><span class="mob-icon">▤</span>Dash<span class=mobile-nav-badge>7</span></button><button class="mobile-nav-item " onclick="showScreen('screen-intake')"><span class="mob-icon">↓</span>Intake<span class=mobile-nav-badge>3</span></button><button class="mobile-nav-item " onclick="showScreen('screen-approval')"><span class="mob-icon">✓</span>Approve</button><button class="mobile-nav-item active" onclick="showScreen('screen-nli-audit')"><span class="mob-icon">⊞</span>Audit</button><button class="mobile-nav-item " onclick="showScreen('screen-overdue')"><span class="mob-icon">!</span>Alerts<span class=mobile-nav-badge>2</span></button></div></nav>
+</div></div>
+
+<!-- SCREEN 9: ADOPTION METRICS -->
+<div class="screen" id="screen-nli-metrics">
+<div class="app-layout">
+<aside class="sidebar"><div class="sidebar-logo"><div class="wordmark">SimCorp Alternatives</div><div class="module-tag">LP Platform · Phase 2</div></div><div class="sidebar-module-switcher"><button class="sidebar-module-btn active" onclick="showScreen('screen-dashboard')">Capital Ops</button><button class="sidebar-module-btn " onclick="showScreen('screen-ledger')">Lens</button></div><nav class="sidebar-nav"><div class="nav-section-label">Capital Operations</div><div class="nav-item " onclick="showScreen('screen-dashboard')"><span class="nav-icon">▤</span> Call Dashboard <span class="nav-badge">7</span></div>
+<div class="nav-item " onclick="showScreen('screen-intake')"><span class="nav-icon">↓</span> Notice Intake <span class="nav-badge">3</span></div>
+<div class="nav-item " onclick="showScreen('screen-approval')"><span class="nav-icon">✓</span> Approval Queue <span class="nav-badge">4</span></div>
+<div class="nav-item " onclick="showScreen('screen-funding')"><span class="nav-icon">⊡</span> Funding Instructions </div>
+<div class="nav-item " onclick="showScreen('screen-ledger')"><span class="nav-icon">≡</span> Capital Account Ledger </div>
+<div class="nav-item " onclick="showScreen('screen-overdue')"><span class="nav-icon">!</span> Overdue Alerts <span class="nav-badge">2</span></div>
+<div class="nav-section-label">Lens · Valuations</div><div class="nav-item" style="opacity:0.35;"><span class="nav-icon">∿</span> Valuation Engine</div><div class="nav-item" style="opacity:0.35;"><span class="nav-icon">◉</span> Portfolio Hierarchy</div><div class="nav-section-label">Phase 2 — NLI Active</div><div class="nav-item " onclick="showScreen('screen-nli-audit')"><span class="nav-icon">⊞</span> NLI Audit Trail</div>
+<div class="nav-item active" onclick="showScreen('screen-nli-metrics')"><span class="nav-icon">∿</span> Adoption Metrics</div>
+</nav><div class="sidebar-footer"><div class="user-row"><div class="user-avatar">AV</div><div style="flex:1;min-width:0;"><div class="user-name">Adriana Voss</div><div class="user-role">Head of Operations</div></div></div></div></aside>
+<div class="main-content">
+  <div class="mobile-topbar"><div class="mobile-wordmark">Adoption Metrics</div><div class="mobile-avatar">AV</div></div>
+  <div class="topbar">
+    <div class="topbar-breadcrumb"><span style="cursor:pointer;" onclick="showScreen('screen-dashboard')">Capital Operations</span><span>›</span><span class="current">NLI Adoption Metrics</span></div>
+    <div class="topbar-spacer"></div>
+    <div class="topbar-actions">
+      <div class="ibor-badge"><span class="ibor-live-dot"></span> IBOR Live</div>
+      <button class="view-switcher-pill" onclick="openMobilePreview('screen-nli-metrics')">📱 Mobile view</button>
+    </div>
+  </div>
+  <div class="page-body">
+    <div class="page-header">
+      <div><div class="page-title">Phase 2 — NLI Adoption Metrics</div><div class="page-subtitle">60-day window · 4 design-partner accounts · PSP Investments · Idinvest · Hamilton Lane · Golub Capital</div></div>
+      <div style="display:inline-flex;align-items:center;gap:6px;background:#EAF3EC;border:1px solid rgba(0,135,90,0.2);border-radius:5px;padding:6px 12px;"><span style="font-size:11px;font-weight:600;color:#1A5C2A;">5 / 5 Exit Criteria Met ✓</span></div>
+    </div>
+    <div class="panel" style="margin-bottom:18px;">
+      <div class="panel-header"><span class="panel-title">Phase 2 Exit Criteria — 60-Day Progress</span><span style="font-size:11px;color:var(--brand-grey-60);">Day 42 of 60</span></div>
+      <div class="metric-row">
+        <div class="metric-label-group"><div class="metric-label">NLI adoption rate ≥ 20% of write actions within 60 days</div><div class="metric-sub">Target: 20% · Day 42</div></div>
+        <div class="metric-bar-wrap"><div class="metric-bar-fill" style="width:100%;background:var(--pos);"></div></div>
+        <div class="metric-value">30%</div>
+        <span class="criteria-met">✓ Met</span>
+      </div>
+      <div class="metric-row">
+        <div class="metric-label-group"><div class="metric-label">NLI ambiguity rate ≤ 12% at end of 60-day window</div><div class="metric-sub">Target: ≤ 12% · Trending down</div></div>
+        <div class="metric-bar-wrap"><div class="metric-bar-fill" style="width:78%;background:var(--pos);"></div></div>
+        <div class="metric-value">9.4%</div>
+        <span class="criteria-met">✓ Met</span>
+      </div>
+      <div class="metric-row">
+        <div class="metric-label-group"><div class="metric-label">NLI action reversal rate ≤ 5%</div><div class="metric-sub">Target: ≤ 5%</div></div>
+        <div class="metric-bar-wrap"><div class="metric-bar-fill" style="width:42%;background:var(--pos);"></div></div>
+        <div class="metric-value">2.1%</div>
+        <span class="criteria-met">✓ Met</span>
+      </div>
+      <div class="metric-row">
+        <div class="metric-label-group"><div class="metric-label">Zero audit log gaps for NLI-originated actions</div><div class="metric-sub">Nightly completeness check</div></div>
+        <div class="metric-bar-wrap"><div class="metric-bar-fill" style="width:100%;background:var(--pos);"></div></div>
+        <div class="metric-value">100%</div>
+        <span class="criteria-met">✓ Met</span>
+      </div>
+      <div class="metric-row">
+        <div class="metric-label-group"><div class="metric-label">Written compliance sign-off from ≥ 1 design-partner</div><div class="metric-sub">Required before Phase 3</div></div>
+        <div class="metric-bar-wrap"><div class="metric-bar-fill" style="width:100%;background:var(--pos);"></div></div>
+        <div class="metric-value">✓</div>
+        <span class="criteria-met">✓ Met</span>
+      </div>
+
+      <div style="padding:12px 16px;border-top:1px solid var(--border);background:#F2F9F6;display:flex;align-items:center;justify-content:space-between;">
+        <div style="font-size:12px;font-weight:600;color:var(--pos);">All Phase 2 exit criteria met — Phase 3 enablement approved</div>
+        <button class="btn btn-primary btn-sm" onclick="showScreen('screen-dashboard')">→ Continue to Phase 3</button>
+      </div>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
+      <div class="panel">
+        <div class="panel-header"><span class="panel-title">NLI Adoption by User</span><span style="font-size:11px;color:var(--brand-grey-60);">Last 14 days</span></div>
+        <div class="metric-row">
+          <div style="display:flex;align-items:center;gap:8px;flex:1;min-width:0;">
+            <div style="width:26px;height:26px;border-radius:50%;background:var(--brand-deep);display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;color:rgba(255,255,255,0.8);flex-shrink:0;">MK</div>
+            <div><div style="font-size:12px;font-weight:500;color:var(--brand-deep);">Marcus Klein</div><div style="font-size:10.5px;color:var(--brand-grey-60);">Supervisor</div></div>
+          </div>
+          <div class="metric-bar-wrap"><div class="metric-bar-fill" style="width:100%;"></div></div>
+          <div class="metric-value">58%</div>
+        </div>
+        <div class="metric-row">
+          <div style="display:flex;align-items:center;gap:8px;flex:1;min-width:0;">
+            <div style="width:26px;height:26px;border-radius:50%;background:var(--brand-deep);display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;color:rgba(255,255,255,0.8);flex-shrink:0;">PS</div>
+            <div><div style="font-size:12px;font-weight:500;color:var(--brand-deep);">Priya Sharma</div><div style="font-size:10.5px;color:var(--brand-grey-60);">Ops Analyst</div></div>
+          </div>
+          <div class="metric-bar-wrap"><div class="metric-bar-fill" style="width:59%;"></div></div>
+          <div class="metric-value">34%</div>
+        </div>
+        <div class="metric-row">
+          <div style="display:flex;align-items:center;gap:8px;flex:1;min-width:0;">
+            <div style="width:26px;height:26px;border-radius:50%;background:var(--brand-deep);display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;color:rgba(255,255,255,0.8);flex-shrink:0;">JC</div>
+            <div><div style="font-size:12px;font-weight:500;color:var(--brand-deep);">James Chen</div><div style="font-size:10.5px;color:var(--brand-grey-60);">Ops Analyst</div></div>
+          </div>
+          <div class="metric-bar-wrap"><div class="metric-bar-fill" style="width:48%;"></div></div>
+          <div class="metric-value">28%</div>
+        </div>
+        <div class="metric-row">
+          <div style="display:flex;align-items:center;gap:8px;flex:1;min-width:0;">
+            <div style="width:26px;height:26px;border-radius:50%;background:var(--brand-deep);display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;color:rgba(255,255,255,0.8);flex-shrink:0;">AV</div>
+            <div><div style="font-size:12px;font-weight:500;color:var(--brand-deep);">Adriana Voss</div><div style="font-size:10.5px;color:var(--brand-grey-60);">Head of Ops</div></div>
+          </div>
+          <div class="metric-bar-wrap"><div class="metric-bar-fill" style="width:31%;"></div></div>
+          <div class="metric-value">18%</div>
+        </div>
+        <div class="metric-row">
+          <div style="display:flex;align-items:center;gap:8px;flex:1;min-width:0;">
+            <div style="width:26px;height:26px;border-radius:50%;background:var(--brand-deep);display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;color:rgba(255,255,255,0.8);flex-shrink:0;">SP</div>
+            <div><div style="font-size:12px;font-weight:500;color:var(--brand-deep);">Sarah Park</div><div style="font-size:10.5px;color:var(--brand-grey-60);">Ops Analyst</div></div>
+          </div>
+          <div class="metric-bar-wrap"><div class="metric-bar-fill" style="width:19%;"></div></div>
+          <div class="metric-value">11%</div>
+        </div>
+
+      </div>
+      <div class="panel">
+        <div class="panel-header"><span class="panel-title">Command Categories</span><span style="font-size:11px;color:var(--brand-grey-60);">By resolved intent</span></div>
+        <div class="panel-body">
+          <div style="margin-bottom:11px;"><div style="display:flex;justify-content:space-between;margin-bottom:4px;"><span style="font-size:12px;color:var(--brand-grey);">Show / Navigate</span><span style="font-family:var(--font-mono);font-size:11.5px;font-weight:600;color:var(--brand-deep);">38%</span></div><div class="progress-bar-wrap"><div class="progress-bar-fill" style="width:38%;background:var(--brand-deep);"></div></div></div>
+          <div style="margin-bottom:11px;"><div style="display:flex;justify-content:space-between;margin-bottom:4px;"><span style="font-size:12px;color:var(--brand-grey);">Approve call</span><span style="font-family:var(--font-mono);font-size:11.5px;font-weight:600;color:var(--brand-deep);">24%</span></div><div class="progress-bar-wrap"><div class="progress-bar-fill" style="width:24%;background:var(--brand-deep);"></div></div></div>
+          <div style="margin-bottom:11px;"><div style="display:flex;justify-content:space-between;margin-bottom:4px;"><span style="font-size:12px;color:var(--brand-grey);">Generate wire instruction</span><span style="font-family:var(--font-mono);font-size:11.5px;font-weight:600;color:var(--brand-deep);">16%</span></div><div class="progress-bar-wrap"><div class="progress-bar-fill" style="width:16%;background:var(--brand-deep);"></div></div></div>
+          <div style="margin-bottom:11px;"><div style="display:flex;justify-content:space-between;margin-bottom:4px;"><span style="font-size:12px;color:var(--brand-grey);">Query status / amounts</span><span style="font-family:var(--font-mono);font-size:11.5px;font-weight:600;color:var(--brand-deep);">13%</span></div><div class="progress-bar-wrap"><div class="progress-bar-fill" style="width:13%;background:var(--brand-deep);"></div></div></div>
+          <div style="margin-bottom:11px;"><div style="display:flex;justify-content:space-between;margin-bottom:4px;"><span style="font-size:12px;color:var(--brand-grey);">Clarifying round-trips</span><span style="font-family:var(--font-mono);font-size:11.5px;font-weight:600;color:var(--brand-deep);">9.4%</span></div><div class="progress-bar-wrap"><div class="progress-bar-fill" style="width:9%;background:var(--brand-deep);"></div></div></div>
+          <div style="margin-bottom:11px;"><div style="display:flex;justify-content:space-between;margin-bottom:4px;"><span style="font-size:12px;color:var(--brand-grey);">Refused (bank registry)</span><span style="font-family:var(--font-mono);font-size:11.5px;font-weight:600;color:var(--brand-deep);">0.6%</span></div><div class="progress-bar-wrap"><div class="progress-bar-fill" style="width:1%;background:var(--brand-deep);"></div></div></div>
+
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<nav class="mobile-nav"><div class="mobile-nav-items"><button class="mobile-nav-item " onclick="showScreen('screen-dashboard')"><span class="mob-icon">▤</span>Dash<span class=mobile-nav-badge>7</span></button><button class="mobile-nav-item " onclick="showScreen('screen-intake')"><span class="mob-icon">↓</span>Intake<span class=mobile-nav-badge>3</span></button><button class="mobile-nav-item " onclick="showScreen('screen-approval')"><span class="mob-icon">✓</span>Approve</button><button class="mobile-nav-item " onclick="showScreen('screen-nli-audit')"><span class="mob-icon">⊞</span>Audit</button><button class="mobile-nav-item " onclick="showScreen('screen-overdue')"><span class="mob-icon">!</span>Alerts<span class=mobile-nav-badge>2</span></button></div></nav>
+</div></div>
+
+<!-- MODALS -->
+<div class="modal-overlay" id="modal-approve">
+  <div class="modal">
+    <div class="modal-header"><span class="modal-title">Confirm Approval</span><button class="modal-close" onclick="closeModal('modal-approve')">✕</button></div>
+    <div class="modal-body">
+      <div class="action-preview-card"><div class="action-preview-label">Action Preview</div><div class="action-preview-action" id="modal-action-text">—</div><div class="action-preview-detail" id="modal-detail-text">—</div></div>
+      <div class="alert alert-info"><span class="alert-icon">ℹ</span><span>Your approval is legally attributed to <strong>Marcus Klein (MK-0081)</strong> and immutably recorded. This action cannot be reversed.</span></div>
+    </div>
+    <div class="modal-footer"><button class="btn btn-secondary" onclick="closeModal('modal-approve')">Cancel</button><button class="btn btn-primary" onclick="closeModal('modal-approve');showScreen('screen-funding')">✓ Confirm Approval → Route to Funding</button></div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="modal-funded">
+  <div class="modal">
+    <div class="modal-header"><span class="modal-title">Instruction Generated</span><button class="modal-close" onclick="closeModal('modal-funded')">✕</button></div>
+    <div class="modal-body">
+      <div style="text-align:center;padding:16px 0;">
+        <div style="font-size:40px;margin-bottom:10px;color:var(--pos);">✓</div>
+        <div style="font-family:var(--font-display);font-size:17px;font-weight:700;color:var(--brand-deep);margin-bottom:5px;">Funding Instruction Confirmed</div>
+        <div style="font-size:12.5px;color:var(--brand-grey-60);margin-bottom:14px;">£ 11,400,000 · Carlyle Global Credit Fund III</div>
+        <div style="background:var(--brand-grey-10);border-radius:var(--r-md);padding:11px;text-align:left;"><div style="font-size:10.5px;color:var(--brand-grey-60);margin-bottom:3px;">Audit Record Created</div><div class="mono" style="font-size:11px;">EVT-2026-0091-CC · Marcus Klein · 2026-04-05T11:34:22Z</div></div>
+      </div>
+      <div class="alert alert-success"><span class="alert-icon">✓</span><span>IBOR write-back initiated. Estimated confirmation within 11 minutes.</span></div>
+    </div>
+    <div class="modal-footer"><button class="btn btn-primary" onclick="closeModal('modal-funded');showScreen('screen-ledger')">View Ledger →</button><button class="btn btn-secondary" onclick="closeModal('modal-funded');showScreen('screen-dashboard')">Return to Dashboard</button></div>
+  </div>
+</div>
+
+<!-- MOBILE PREVIEW OVERLAY -->
+<div class="mobile-preview-overlay" id="mobile-preview-overlay">
+  <button class="mobile-exit-btn" onclick="closeMobilePreview()">✕ Exit mobile preview</button>
+  <div class="mobile-preview-frame">
+    <div class="mobile-status-bar"><span>9:41</span><span>SimCorp · PSP</span><span>5G ▮▮▮▮</span></div>
+    <div class="mobile-frame-inner" id="mobile-frame-inner"></div>
+  </div>
+</div>
+
+<script>
+// ── SCREEN NAV ───────────────────────────────────────────────
+function showScreen(id) {
+  document.querySelectorAll('.screen').forEach(function(s){s.classList.remove('active');});
+  var t = document.getElementById(id);
+  if (t) { t.classList.add('active'); window.scrollTo(0,0); }
+}
+
+// ── AI PANEL ─────────────────────────────────────────────────
+var aiExpanded = false;
+function toggleAIPanel() {
+  var p = document.getElementById('main-ai-panel');
+  var ch = document.getElementById('ai-chevron');
+  if (!p) return;
+  aiExpanded = !aiExpanded;
+  if (aiExpanded) {
+    p.classList.remove('collapsed');
+    if (ch) ch.textContent = '▼';
+    if (nliHistory.length === 0) {
+      nliHistory.push({role:'ai', text:'Phase 2 active. NLI write actions enabled — all actions legally attributed to you.\n\nTry: "show overdue calls" · "approve Apollo call" · "fund Carlyle" · "what is the STP rate" · "open audit trail"'});
+      renderNLI();
+    }
+  } else {
+    p.classList.add('collapsed');
+    if (ch) ch.textContent = '▲';
+  }
+}
+
+// ── MODALS ────────────────────────────────────────────────────
+function openApproveModal(fund, amount, ref) {
+  document.getElementById('modal-action-text').textContent = 'Approve Call: ' + ref;
+  document.getElementById('modal-detail-text').textContent = fund + '  ·  ' + amount;
+  document.getElementById('modal-approve').classList.add('open');
+}
+function openFundedModal() { document.getElementById('modal-funded').classList.add('open'); }
+function closeModal(id) { document.getElementById(id).classList.remove('open'); }
+document.querySelectorAll('.modal-overlay').forEach(function(o){
+  o.addEventListener('click', function(e){ if(e.target===o) o.classList.remove('open'); });
+});
+
+// ── ECHO VALIDATION ───────────────────────────────────────────
+function checkEcho() {
+  var f = (document.getElementById('echo-fund') && document.getElementById('echo-fund').value||'').trim().toLowerCase();
+  var a = (document.getElementById('echo-amount') && document.getElementById('echo-amount').value||'').trim().replace(/[,\s]/g,'');
+  var btn = document.getElementById('confirm-fund-btn');
+  if (!btn) return;
+  var ok = f === 'carlyle global credit fund iii' && a === '11400000';
+  btn.disabled = !ok;
+  btn.style.opacity = ok ? '1' : '0.3';
+  btn.style.cursor = ok ? 'pointer' : 'not-allowed';
+}
+
+// ── NLI ENGINE ────────────────────────────────────────────────
+var nliHistory = [];
+
+function sendNLI() {
+  var inp = document.getElementById('nli-input');
+  if (!inp) return;
+  var raw = inp.value.trim();
+  if (!raw) return;
+  inp.value = '';
+  nliHistory.push({role:'user', text:raw});
+  renderNLI();
+  setTimeout(function() {
+    var resp = resolveNLI(raw.toLowerCase());
+    nliHistory.push(resp);
+    renderNLI();
+  }, 380);
+}
+
+function resolveNLI(q) {
+  // Navigation
+  if (/overdue|past due|missed/.test(q)) { setTimeout(function(){showScreen('screen-overdue');},500); return {role:'ai',text:'Navigating to Overdue Alerts — 2 calls past due date requiring immediate action.'}; }
+  if (/dashboard|home|back/.test(q)) { setTimeout(function(){showScreen('screen-dashboard');},500); return {role:'ai',text:'Returning to Capital Call Dashboard.'}; }
+  if (/intake|queue|notice/.test(q)) { setTimeout(function(){showScreen('screen-intake');},500); return {role:'ai',text:'Opening Notice Intake — 3 notices awaiting field review.'}; }
+  if (/approval|pending approv/.test(q)) { setTimeout(function(){showScreen('screen-approval');},500); return {role:'ai',text:'Opening Approval Queue — 4 calls awaiting sign-off.'}; }
+  if (/ledger|commitment|unfunded/.test(q)) { setTimeout(function(){showScreen('screen-ledger');},500); return {role:'ai',text:'Opening Capital Account Ledger — €2.84B committed across 75 funds.'}; }
+  if (/audit|audit trail|nli log/.test(q)) { setTimeout(function(){showScreen('screen-nli-audit');},500); return {role:'ai',text:'Opening NLI Audit Trail — 43 NLI actions logged, 100% audit completeness.'}; }
+  if (/metric|adoption|adoption rate/.test(q)) { setTimeout(function(){showScreen('screen-nli-metrics');},500); return {role:'ai',text:'Opening Adoption Metrics — NLI at 30%, all Phase 2 exit criteria met.'}; }
+  // Queries
+  if (/stp rate|straight.through/.test(q)) return {role:'ai',text:'Current STP rate (30-day): 72%. Target is 80% at GA. Up 8 percentage points since Phase 1.'};
+  if (/how many|active call|total call/.test(q)) return {role:'ai',text:'24 active capital calls. 7 pending funding (due within 5 days), 2 overdue, 4 awaiting approval.'};
+  if (/ibor|write.back|reconcil/.test(q)) return {role:'ai',text:'IBOR reconciliation: 99.1%. p99 write-back latency: 11 minutes. 3 pending write-backs in progress.'};
+  if (/status.*ares|ares.*status/.test(q)) return {role:'ai',text:'Ares Capital Partners VI (ACP6-2026-Q2-001): €14,250,000 — OVERDUE since 07 Apr 2026. In approval queue. T+1 escalation active.'};
+  if (/status.*apollo|apollo.*status/.test(q)) return {role:'ai',text:'Apollo European Principal Finance IV (AEPF4-2026-0089): €9,800,000 — Pending Supervisor approval. Due 11 Apr 2026. Extraction confidence 96%.'};
+  // Write actions — Action Preview Cards
+  if (/approv.*apollo|apollo.*approv/.test(q)) return {role:'ai',card:{title:'Approve Call: AEPF4-2026-0089',detail:'Apollo European Principal Finance IV · €9,800,000 · Due 11 Apr 2026',conf:91,dest:'screen-funding',fund:'Apollo European Principal Finance IV',amount:'€ 9,800,000',ref:'AEPF4-2026-0089'}};
+  if (/approv.*ares|ares.*approv/.test(q)) return {role:'ai',text:'Note: this call is overdue — wire must follow immediately.',card:{title:'Approve Call: ACP6-2026-Q2-001',detail:'Ares Capital Partners VI · €14,250,000 · OVERDUE — urgent',conf:88,dest:'screen-funding',fund:'Ares Capital Partners VI',amount:'€ 14,250,000',ref:'ACP6-2026-Q2-001'}};
+  if (/fund.*carlyle|carlyle.*wire|generate.*wire/.test(q)) return {role:'ai',card:{title:'Generate Wire: CGCF3-2026-Q204',detail:'Carlyle Global Credit Fund III · £11,400,000 · Barclays Bank PLC · BARCGB22',conf:97,dest:'screen-funding',fund:'Carlyle Global Credit Fund III',amount:'£ 11,400,000',ref:'CGCF3-2026-Q204'}};
+  if (/bank|bene|account.*number|swift.*change/.test(q)) return {role:'ai',refused:true,text:'⚑ Bank registry modifications cannot be processed through the AI Command Interface. This is an architectural decision to prevent SWIFT wire fraud. Please use the UI with secondary authentication. This instruction has been logged.'};
+  // Ambiguous
+  if (/^approve$/.test(q.trim()) || q.trim() === 'approve the call') return {role:'ai',clarify:'There are 4 calls awaiting approval. Which fund did you mean?\n\n• Apollo European Principal Finance IV — €9,800,000\n• Ares Capital Partners VI — €14,250,000 (overdue)\n• KKR Real Estate Finance Trust — $6,150,000\n• Intermediate Capital Group IX — €5,200,000\n\nReply with the fund name to proceed.'};
+  if (/^(fund|wire)$/.test(q.trim())) return {role:'ai',clarify:'Which fund\'s wire would you like to generate? Currently approved:\n\n• Carlyle Global Credit Fund III — £11,400,000\n• Oaktree Opportunities Fund XII — $18,750,000\n\nReply with the fund name.'};
+  return {role:'ai',text:'I couldn\'t resolve that to an unambiguous action. Try:\n"approve Apollo call" · "show overdue calls" · "fund Carlyle" · "what is the STP rate" · "open audit trail"'};
+}
+
+function renderNLI() {
+  var c = document.getElementById('ai-messages');
+  if (!c) return;
+  c.innerHTML = '';
+  var msgs = nliHistory.slice(-8);
+  msgs.forEach(function(m) {
+    var el = document.createElement('div');
+    el.className = 'ai-msg' + (m.role==='user' ? ' user' : '');
+    var inner = m.role==='user' ? '' : '<div class="ai-msg-avatar">◈</div>';
+    inner += '<div style="flex:1;">';
+    if (m.text) inner += '<div class="ai-msg-bubble">' + esc(m.text) + '</div>';
+    if (m.clarify) inner += '<div class="nli-clarify">' + esc(m.clarify) + '</div>';
+    if (m.refused) inner += '<div class="nli-refused">' + esc(m.text||'') + '</div>';
+    if (m.card) {
+      var cc = m.card;
+      var cPct = cc.conf;
+      var cColor = cPct>=90?'#888':cPct>=75?'#B8860B':'#A02020';
+      inner += '<div class="nli-action-card">' +
+        '<div class="nli-card-label">Action Preview</div>' +
+        '<div class="nli-card-action">' + esc(cc.title) + '</div>' +
+        '<div class="nli-card-detail">' + esc(cc.detail) + '</div>' +
+        '<div class="nli-conf-row"><span style="font-size:9px;color:rgba(255,255,255,0.3);">Confidence</span><div class="nli-conf-bar"><div class="nli-conf-fill" style="width:'+cPct+'%;background:'+cColor+';"></div></div><span class="nli-conf-label" style="color:'+cColor+';">'+cPct+'%</span></div>' +
+        '<div style="font-size:9px;color:rgba(255,255,255,0.25);margin-bottom:7px;">Your identity will be recorded as the responsible user.</div>' +
+        '<div class="nli-btns"><button class="nli-btn nli-btn-cancel" onclick="nliCancel()">✗ Cancel</button>' +
+        '<button class="nli-btn nli-btn-confirm" onclick="nliConfirm(\''+cc.dest+'\',\''+esc(cc.fund)+'\',\''+esc(cc.amount)+'\',\''+cc.ref+'\')">✓ Confirm</button></div></div>';
+    }
+    inner += '</div>';
+    el.innerHTML = inner;
+    c.appendChild(el);
+  });
+  c.scrollTop = c.scrollHeight;
+}
+
+function nliConfirm(dest, fund, amount, ref) {
+  nliHistory.push({role:'ai', text:'✓ Confirmed and logged. Routing to next step.\nAudit record: CALL_APPROVED · ' + ref + ' · Responsible user: current session.'});
+  renderNLI();
+  setTimeout(function(){ showScreen(dest); openApproveModal(fund, amount, ref); }, 700);
+}
+function nliCancel() {
+  nliHistory.push({role:'ai', text:'Action cancelled. No changes made. Cancellation logged.'});
+  renderNLI();
+}
+function esc(s) {
+  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+
+// ── AUDIT DETAIL ──────────────────────────────────────────────
+var auditDB = {
+  'EVT-2026-0091-CC':{type:'FUNDING_INSTRUCTION_GENERATED',modality:'NLI',ts:'2026-04-05T11:34:22Z',user:'Marcus Klein',userId:'MK-0081',role:'Ops Supervisor',entity:'Capital Call · CGCF3-2026-Q204',before:'status: approved',after:'status: funded',raw:'"generate wire for Carlyle call"',interpreted:'{"action":"FUNDING_INSTRUCTION_GENERATED","entity_id":"CGCF3-2026-Q204","fund":"Carlyle Global Credit Fund III","amount":11400000,"currency":"GBP"}',conf:97,confType:'VERBAL_CONFIRMATION + AMOUNT_ECHO + FUND_NAME_ECHO'},
+  'EVT-2026-0090-AP':{type:'CALL_APPROVED',modality:'NLI',ts:'2026-04-05T10:12:04Z',user:'Marcus Klein',userId:'MK-0081',role:'Ops Supervisor',entity:'Capital Call · AEPF4-2026-0089',before:'status: pending_approval',after:'status: approved',raw:'"approve the Apollo call"',interpreted:'{"action":"CALL_APPROVED","entity_id":"AEPF4-2026-0089","fund":"Apollo European Principal Finance IV","amount":9800000,"currency":"EUR"}',conf:91,confType:'VERBAL_CONFIRMATION'},
+  'EVT-2026-0088-CL':{type:'NLI_AMBIGUOUS_RESOLVED',modality:'NLI',ts:'2026-04-04T16:22:38Z',user:'Priya Sharma',userId:'PS-0044',role:'Operations Analyst',entity:'Capital Call — resolved after clarification: ACP6-2026-Q2-001',before:'status: pending_validation',after:'status: submitted_for_approval',raw:'"approve the call"',interpreted:'{"action":"SUBMIT_FOR_APPROVAL","entity_id":"ACP6-2026-Q2-001","resolved_after_clarification":true,"clarification_rounds":1}',conf:78,confType:'VERBAL_CONFIRMATION_POST_CLARIFICATION'},
+  'EVT-2026-0087-RF':{type:'NLI_INSTRUCTION_REFUSED',modality:'NLI',ts:'2026-04-04T11:34:01Z',user:'Priya Sharma',userId:'PS-0044',role:'Operations Analyst',entity:'Bank Registry · GP-ARES-001',before:'(no change)',after:'(no change)',raw:'"change Ares bank account to IBAN DE89..."',interpreted:'{"action":"BANK_REGISTRY_MODIFY","refused":true,"refusal_reason":"BANK_REGISTRY_EXCLUDED_FROM_NLI"}',conf:99,confType:'REFUSED — NO CONFIRMATION REQUESTED'},
+  'EVT-2026-0085-AP':{type:'CALL_APPROVED',modality:'NLI',ts:'2026-04-03T09:01:44Z',user:'Marcus Klein',userId:'MK-0081',role:'Ops Supervisor',entity:'Capital Call · CGCF3-2026-Q204',before:'status: pending_approval',after:'status: approved',raw:'"approve Carlyle GBP call"',interpreted:'{"action":"CALL_APPROVED","entity_id":"CGCF3-2026-Q204","fund":"Carlyle Global Credit Fund III","amount":11400000,"currency":"GBP"}',conf:94,confType:'VERBAL_CONFIRMATION'},
+};
+
+function showAuditDetail(eid) {
+  var d = auditDB[eid];
+  if (!d) return;
+  var isNLI = d.modality === 'NLI';
+  var cColor = d.conf>=90?'#888':d.conf>=75?'#B8860B':'#A02020';
+  var nliBlock = isNLI ? '<div class="audit-nli-block"><div class="audit-nli-block-label">NLI-Specific Fields — AIFMD Article 75</div>' +
+    '<div class="audit-nli-field"><div class="audit-nli-field-label">raw_nl_instruction</div><div class="audit-nli-field-value">' + esc(d.raw) + '</div></div>' +
+    '<div class="audit-nli-field"><div class="audit-nli-field-label">ai_interpreted_action_json</div><div class="audit-nli-field-value">' + esc(d.interpreted) + '</div></div>' +
+    '<div class="audit-nli-field"><div class="audit-nli-field-label">ai_confidence_score</div><div style="display:flex;align-items:center;gap:6px;margin-top:3px;"><div style="flex:1;height:2px;background:rgba(255,255,255,0.1);border-radius:1px;"><div style="width:'+d.conf+'%;height:100%;background:'+cColor+';border-radius:1px;"></div></div><span style="font-family:var(--font-mono);font-size:10.5px;color:'+cColor+';font-weight:600;">'+d.conf+'%</span></div></div>' +
+    '<div class="audit-nli-field"><div class="audit-nli-field-label">confirmation_type</div><div class="audit-nli-field-value">' + esc(d.confType) + '</div></div></div>' : '';
+  var stdFields = [['Event ID',eid,true],['Timestamp (UTC)',d.ts,true],['Responsible User',d.user+' ('+d.userId+')',false],['User Role',d.role,false],['Entity',d.entity,false],['Before State',d.before,true],['After State',d.after,true]];
+  var fieldHTML = stdFields.map(function(f){return '<div class="field-row"><span class="field-label">'+f[0]+'</span><span class="field-value'+(f[2]?' mono':'')+'">'+esc(f[1])+'</span></div>';}).join('');
+  document.getElementById('audit-detail-panel').innerHTML =
+    '<div class="panel" style="position:sticky;top:16px;">' +
+    '<div class="panel-header"><span class="panel-title">'+d.type+(isNLI?'<span class="audit-nli-tag" style="margin-left:6px;">NLI</span>':'')+'</span>' +
+    '<button onclick="document.getElementById(\'audit-detail-panel\').innerHTML=\'<div class=panel><div class=panel-header><span class=panel-title>Select an event</span></div><div class=panel-body style=color:var(--brand-grey-60);font-size:12px;>Click any row to view the full record.</div></div>\'" style="background:none;border:none;cursor:pointer;color:var(--brand-grey-60);font-size:14px;">✕</button></div>' +
+    '<div style="padding:0;">' + nliBlock +
+    '<div style="padding:4px 16px 14px;"><div style="font-size:10px;font-weight:600;letter-spacing:0.08em;text-transform:uppercase;color:var(--brand-grey-60);margin-bottom:8px;margin-top:14px;">Standard Audit Fields</div>' + fieldHTML + '</div></div></div>';
+}
+
+// ── MOBILE PREVIEW ────────────────────────────────────────────
+var _mob = 'screen-dashboard';
+function openMobilePreview(sid) { _mob=sid; document.getElementById('mobile-preview-overlay').classList.add('open'); renderMob(sid); }
+function closeMobilePreview() { document.getElementById('mobile-preview-overlay').classList.remove('open'); }
+function navMob(sid) { _mob=sid; renderMob(sid); }
+
+function renderMob(sid) {
+  var frame = document.getElementById('mobile-frame-inner');
+  if (!frame) return;
+
+  function mobTopbar(title, back) {
+    return '<div style="background:#00062B;padding:12px 14px;display:flex;align-items:center;gap:10px;flex-shrink:0;">'+(back?'<button onclick="navMob(\''+back+'\')" style="background:none;border:none;color:rgba(255,255,255,0.6);font-size:16px;cursor:pointer;">←</button>':'')+'<div style="font-family:Syne,sans-serif;font-size:13px;font-weight:700;color:#fff;flex:1;">'+title+'</div><div style="width:26px;height:26px;border-radius:50%;background:rgba(255,255,255,0.1);display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;color:rgba(255,255,255,0.8);">PS</div></div>';
+  }
+  var navItems=[['screen-dashboard','▤','Dash','7'],['screen-intake','↓','Intake','3'],['screen-approval','✓','Approve',''],['screen-nli-audit','⊞','Audit',''],['screen-overdue','!','Alerts','2']];
+  var mobNav='<nav style="background:#fff;border-top:1px solid #E2E2E8;position:sticky;bottom:0;flex-shrink:0;"><div style="display:flex;">' +
+    navItems.map(function(i){return '<button style="flex:1;display:flex;flex-direction:column;align-items:center;gap:2px;padding:7px 2px;font-size:9.5px;font-family:DM Sans,sans-serif;font-weight:500;color:'+(i[0]===sid?'#00062B':'#858585')+';background:none;border:none;cursor:pointer;position:relative;" onclick="navMob(\''+i[0]+'\')"><span style="font-size:14px;">'+i[1]+'</span>'+i[2]+(i[3]?'<span style="position:absolute;top:3px;right:calc(50% - 17px);background:rgba(0,6,43,0.6);color:#fff;font-size:8px;width:12px;height:12px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;">'+i[3]+'</span>':'')+'</button>';}).join('') + '</div></nav>';
+
+  var card = function(fn,amt,status,color,dest) {
+    return '<div style="background:#fff;border-radius:6px;padding:11px;border:1px solid #E2E2E8;margin-bottom:7px;cursor:pointer;" onclick="navMob(\''+dest+'\')"><div style="font-weight:600;font-size:11.5px;color:#00062B;margin-bottom:5px;">'+fn+'</div><div style="display:flex;justify-content:space-between;align-items:center;"><div style="font-family:JetBrains Mono,monospace;font-size:13.5px;font-weight:700;color:#00062B;">'+amt+'</div><span style="font-size:9.5px;font-weight:600;padding:2px 7px;border-radius:3px;background:'+color+'22;color:'+color+';">'+status+'</span></div></div>';
+  };
+
+  var content = {
+    'screen-dashboard': mobTopbar('Capital Calls') +
+      '<div style="flex:1;overflow-y:auto;background:#F5F5F5;padding:12px;">' +
+      '<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px;">' +
+      [['Active Calls','24',''],['Overdue','2','color:#C0392B'],['Pending Funding','7',''],['NLI Adoption','30%','color:#00875A']].map(function(x){return '<div style="background:#fff;border-radius:6px;padding:11px;border:1px solid #E2E2E8;"><div style="font-size:9.5px;font-weight:600;text-transform:uppercase;letter-spacing:0.07em;color:#858585;margin-bottom:3px;">'+x[0]+'</div><div style="font-family:JetBrains Mono,monospace;font-size:19px;font-weight:700;color:#00062B;'+x[2]+'">'+x[1]+'</div></div>';}).join('') + '</div>' +
+      card('Ares Capital Partners VI','€ 14,250,000','Overdue','#C0392B','screen-intake-detail') +
+      card('Apollo AEPF IV','€ 9,800,000','Pending Approval','#555','screen-approval') +
+      card('KKR REFT','$ 6,150,000','AI Extracted','#3A2E52','screen-intake') +
+      card('Carlyle GCF III','£ 11,400,000','Approved','#1A5C2A','screen-funding') +
+      '</div>' + mobNav,
+
+    'screen-intake': mobTopbar('Notice Intake') +
+      '<div style="flex:1;overflow-y:auto;background:#F5F5F5;padding:12px;">' +
+      [['KKR Real Estate Finance Trust','78%','#B8860B','2 flags'],['ICG IX','71%','#B8860B','1 flag'],['Bridgepoint Credit III','52%','#C0392B','4 flags']].map(function(x){return '<div style="background:#fff;border-radius:6px;padding:11px;border:1px solid #E2E2E8;margin-bottom:7px;cursor:pointer;" onclick="navMob(\'screen-intake-detail\')"><div style="font-weight:600;font-size:12px;color:#00062B;margin-bottom:7px;">'+x[0]+'</div><div style="display:flex;align-items:center;gap:8px;margin-bottom:5px;"><div style="flex:1;height:3px;background:#E8E8ED;border-radius:2px;"><div style="width:'+x[1]+';height:100%;background:'+x[2]+';border-radius:2px;"></div></div><span style="font-family:JetBrains Mono,monospace;font-size:10.5px;color:'+x[2]+';font-weight:600;">'+x[1]+'</span></div><div style="font-size:10px;color:#858585;">'+x[3]+'</div></div>';}).join('') + '</div>' + mobNav,
+
+    'screen-intake-detail': mobTopbar('Validate: KKR REFT','screen-intake') +
+      '<div style="flex:1;overflow-y:auto;background:#F5F5F5;padding:12px;">' +
+      '<div style="background:#FDFAF3;border:1px solid #D4A020;border-radius:6px;padding:9px 11px;font-size:11.5px;color:#5A3A00;margin-bottom:11px;">⚑ 2 fields require attention</div>' +
+      [['Fund Name','KKR Real Estate Finance Trust','98%',false],['Call Amount','USD 6,150,000.00','95%',false],['Due Date','2026-04-14','62%',true],['Beneficiary','JP Morgan Chase · New York','91%',false],['Wire Reference','KREFT-Q2-2026-12-LP[PSP]','69%',true]].map(function(x){return '<div style="background:'+(x[3]?'#FDFAF3':'#fff')+';border-radius:6px;padding:10px;border:1px solid '+(x[3]?'#D4A020':'#E2E2E8')+';margin-bottom:7px;"><div style="display:flex;justify-content:space-between;margin-bottom:4px;"><span style="font-size:9.5px;font-weight:600;text-transform:uppercase;letter-spacing:0.06em;color:#858585;">'+x[0]+(x[3]?' ⚑':'')+'</span><span style="font-family:JetBrains Mono,monospace;font-size:10px;color:'+(parseInt(x[2])<70?'#C0392B':'#555')+';">'+x[2]+'</span></div><div style="font-family:JetBrains Mono,monospace;font-size:12px;color:#00062B;">'+x[1]+'</div></div>';}).join('') +
+      '<button style="width:100%;background:#00062B;color:#fff;border:none;border-radius:6px;padding:10px;font-family:DM Sans,sans-serif;font-size:13px;font-weight:600;cursor:pointer;margin-top:4px;" onclick="navMob(\'screen-approval\')">Submit for Approval →</button>' +
+      '</div>' + mobNav,
+
+    'screen-approval': mobTopbar('Approval Queue') +
+      '<div style="flex:1;overflow-y:auto;background:#F5F5F5;padding:12px;">' +
+      [['Apollo European Principal Finance IV','€ 9,800,000','AEPF4-2026-0089','Pending Approval','11 Apr 2026','#00062B'],['Ares Capital Partners VI','€ 14,250,000','ACP6-2026-Q2-001','Overdue','07 Apr 2026','#C0392B']].map(function(x){return '<div style="background:#fff;border-radius:6px;border:1px solid '+(x[5]==='#C0392B'?'#C07060':'#E2E2E8')+';margin-bottom:10px;overflow:hidden;"><div style="background:'+(x[5]==='#C0392B'?'#FBF3F2':'#fff')+';padding:10px;border-bottom:1px solid #E2E2E8;"><div style="font-weight:700;font-size:12px;color:'+x[5]+';margin-bottom:2px;">'+x[0]+'</div><div style="font-size:10px;color:#858585;">'+x[2]+'</div></div><div style="padding:10px;"><div style="font-family:JetBrains Mono,monospace;font-size:17px;font-weight:700;color:'+x[5]+';margin-bottom:5px;">'+x[1]+'</div><div style="font-size:11px;color:#858585;margin-bottom:9px;">Due: <span style="color:'+x[5]+';font-weight:600;">'+x[4]+'</span></div><div style="display:flex;gap:7px;"><button style="flex:1;background:#fff;color:#C0392B;border:1px solid #C07060;border-radius:4px;padding:7px;font-family:DM Sans,sans-serif;font-size:11.5px;font-weight:600;cursor:pointer;">✗ Reject</button><button style="flex:2;background:#00062B;color:#fff;border:none;border-radius:4px;padding:7px;font-family:DM Sans,sans-serif;font-size:11.5px;font-weight:600;cursor:pointer;" onclick="navMob(\'screen-funding\')">✓ Approve</button></div></div></div>';}).join('') +
+      '</div>' + mobNav,
+
+    'screen-funding': mobTopbar('Funding Instruction') +
+      '<div style="flex:1;overflow-y:auto;background:#F5F5F5;padding:12px;">' +
+      '<div style="background:#00062B;border-radius:8px;padding:16px;margin-bottom:12px;"><div style="font-size:9px;letter-spacing:0.1em;text-transform:uppercase;color:rgba(255,255,255,0.35);margin-bottom:8px;">Generated Wire Instruction</div><div style="font-family:JetBrains Mono,monospace;font-size:22px;font-weight:700;color:#fff;margin-bottom:10px;">£ 11,400,000.00</div><div style="height:1px;background:rgba(255,255,255,0.08);margin:10px 0;"></div>' +
+      [['Beneficiary Bank','Barclays Bank PLC · London'],['IBAN','GB29 NWBK 6016 1331 9268 19'],['SWIFT','BARCGB22'],['Reference','CGCF3-2026-Q204-PSP-LP'],['Value Date','18 Apr 2026']].map(function(x){return '<div style="margin-bottom:7px;"><div style="font-size:9px;text-transform:uppercase;letter-spacing:0.06em;color:rgba(255,255,255,0.35);margin-bottom:2px;">'+x[0]+'</div><div style="font-family:JetBrains Mono,monospace;font-size:11.5px;color:rgba(255,255,255,0.85);">'+x[1]+'</div></div>';}).join('') + '</div>' +
+      '<button style="width:100%;background:#00062B;color:#fff;border:none;border-radius:6px;padding:11px;font-family:DM Sans,sans-serif;font-size:13px;font-weight:600;cursor:pointer;" onclick="navMob(\'screen-funded-ok\')">✓ Confirm &amp; Generate Instruction</button>' +
+      '</div>' + mobNav,
+
+    'screen-funded-ok': mobTopbar('Confirmed','screen-dashboard') +
+      '<div style="flex:1;display:flex;align-items:center;justify-content:center;padding:24px;background:#F5F5F5;">' +
+      '<div style="background:#fff;border-radius:10px;border:1px solid #E2E2E8;padding:28px 20px;text-align:center;width:100%;"><div style="font-size:44px;color:#00875A;margin-bottom:12px;">✓</div><div style="font-family:Syne,sans-serif;font-size:17px;font-weight:700;color:#00062B;margin-bottom:5px;">Instruction Generated</div><div style="font-size:12px;color:#858585;margin-bottom:14px;">£ 11,400,000 · Carlyle GCF III</div><div style="background:#F5F5F5;border-radius:5px;padding:10px;margin-bottom:14px;text-align:left;"><div style="font-size:10px;color:#858585;margin-bottom:3px;">Audit Record</div><div style="font-family:JetBrains Mono,monospace;font-size:10.5px;color:#333;">EVT-2026-0091-CC · MK-0081 · 2026-04-05T11:34Z</div></div><div style="font-size:11.5px;color:#00875A;margin-bottom:16px;">IBOR write-back initiated · ~11 min</div><button style="width:100%;background:#00062B;color:#fff;border:none;border-radius:6px;padding:10px;font-family:DM Sans,sans-serif;font-size:13px;font-weight:600;cursor:pointer;" onclick="navMob(\'screen-dashboard\')">Return to Dashboard</button></div>' +
+      '</div>' + mobNav,
+
+    'screen-ledger': mobTopbar('Capital Account Ledger') +
+      '<div style="flex:1;overflow-y:auto;background:#F5F5F5;padding:12px;">' +
+      '<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px;">' +
+      [['Committed','€ 2.84B'],['Contributed','€ 1.62B'],['Unfunded','€ 1.22B'],['IBOR','99.1%']].map(function(x){return '<div style="background:#fff;border-radius:6px;padding:11px;border:1px solid #E2E2E8;"><div style="font-size:9.5px;font-weight:600;text-transform:uppercase;letter-spacing:0.07em;color:#858585;margin-bottom:3px;">'+x[0]+'</div><div style="font-family:JetBrains Mono,monospace;font-size:16px;font-weight:700;color:#00062B;">'+x[1]+'</div></div>';}).join('') + '</div>' +
+      [['Ares Capital Partners VI','EUR','€ 100M','62'],['Blackstone Credit Opps','USD','$ 150M','75'],['Carlyle GCF III','GBP','£ 75M','81'],['Oaktree Opps XII','USD','$ 120M','22'],['KKR REFT','USD','$ 50M','38']].map(function(x){return '<div style="background:#fff;border-radius:6px;padding:11px;border:1px solid #E2E2E8;margin-bottom:7px;"><div style="font-weight:600;font-size:12px;color:#00062B;margin-bottom:2px;">'+x[0]+'</div><div style="font-size:10.5px;color:#858585;margin-bottom:7px;">'+x[1]+' · '+x[2]+'</div><div style="display:flex;align-items:center;gap:8px;"><div style="flex:1;height:3px;background:#E8E8ED;border-radius:2px;"><div style="width:'+x[3]+'%;height:100%;background:#00062B;border-radius:2px;"></div></div><span style="font-family:JetBrains Mono,monospace;font-size:10.5px;color:#555;font-weight:600;">'+x[3]+'%</span></div></div>';}).join('') +
+      '</div>' + mobNav,
+
+    'screen-overdue': mobTopbar('Overdue Alerts') +
+      '<div style="flex:1;overflow-y:auto;background:#F5F5F5;padding:12px;">' +
+      '<div style="background:#FBF3F2;border:1px solid #C07060;border-radius:6px;padding:9px 11px;font-size:11.5px;color:#6A1A1A;margin-bottom:11px;">! 2 calls past due date — immediate action required</div>' +
+      [['Blackstone Credit Opportunities','$ 22,500,000','05 Apr 2026','4 days overdue'],['Ares Capital Partners VI','€ 14,250,000','07 Apr 2026','2 days overdue']].map(function(x){return '<div style="background:#fff;border-radius:6px;border:1px solid #C07060;margin-bottom:10px;overflow:hidden;"><div style="background:#FBF3F2;padding:10px;border-bottom:1px solid #C07060;"><div style="font-weight:700;font-size:12px;color:#C0392B;margin-bottom:2px;">'+x[0]+'</div><div style="font-size:10px;color:#858585;">Due: '+x[2]+' · <span style="color:#C0392B;font-weight:600;">'+x[3]+'</span></div></div><div style="padding:10px;"><div style="font-family:JetBrains Mono,monospace;font-size:18px;font-weight:700;color:#C0392B;margin-bottom:9px;">'+x[1]+'</div><button style="width:100%;background:#C0392B;color:#fff;border:none;border-radius:5px;padding:9px;font-family:DM Sans,sans-serif;font-size:12px;font-weight:600;cursor:pointer;" onclick="navMob(\'screen-approval\')">Rush Approve &amp; Fund</button></div></div>';}).join('') +
+      '</div>' + mobNav,
+
+    'screen-nli-audit': mobTopbar('NLI Audit Trail') +
+      '<div style="flex:1;overflow-y:auto;background:#F5F5F5;padding:12px;">' +
+      '<div style="background:#EAF3EC;border:1px solid rgba(0,135,90,0.2);border-radius:6px;padding:9px 11px;font-size:11.5px;color:#1A5C2A;margin-bottom:11px;">✓ Compliance sign-off received · AIFMD Article 75</div>' +
+      '<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px;">' +
+      [['NLI Actions','43'],['Adoption Rate','30%'],['Ambiguity Rate','9.4%'],['Audit Completeness','100%']].map(function(x){return '<div style="background:#fff;border-radius:6px;padding:11px;border:1px solid #E2E2E8;"><div style="font-size:9.5px;font-weight:600;text-transform:uppercase;letter-spacing:0.07em;color:#858585;margin-bottom:3px;">'+x[0]+'</div><div style="font-family:JetBrains Mono,monospace;font-size:17px;font-weight:700;color:#00062B;">'+x[1]+'</div></div>';}).join('') + '</div>' +
+      [['FUNDING_INSTRUCTION_GENERATED','NLI','Marcus Klein','Carlyle GCF III · £11.4M'],['CALL_APPROVED','NLI','Marcus Klein','Apollo AEPF IV · €9.8M'],['CALL_SUBMITTED','UI','Priya Sharma','KKR REFT · $6.15M'],['NLI_AMBIGUOUS_RESOLVED','NLI','Priya Sharma','Resolved after 1 clarification'],['NLI_REFUSED','NLI','Priya Sharma','Bank registry — refused']].map(function(x){return '<div style="background:#fff;border-radius:6px;padding:10px;border:1px solid #E2E2E8;margin-bottom:7px;"><div style="display:flex;align-items:center;gap:5px;margin-bottom:3px;"><span style="font-size:9px;font-weight:600;text-transform:uppercase;color:#858585;">'+x[0]+'</span>'+(x[1]==='NLI'?'<span style="font-size:8.5px;font-weight:700;background:#00062B;color:rgba(255,255,255,0.7);padding:1px 5px;border-radius:3px;">NLI</span>':'')+'</div><div style="font-size:12px;font-weight:500;color:#00062B;margin-bottom:1px;">'+x[3]+'</div><div style="font-size:10.5px;color:#858585;">'+x[2]+'</div></div>';}).join('') +
+      '</div>' + mobNav,
+
+    'screen-nli-metrics': mobTopbar('Adoption Metrics') +
+      '<div style="flex:1;overflow-y:auto;background:#F5F5F5;padding:12px;">' +
+      '<div style="background:#EAF3EC;border:1px solid rgba(0,135,90,0.2);border-radius:6px;padding:9px 11px;font-size:11.5px;font-weight:600;color:#1A5C2A;margin-bottom:11px;">All 5 Phase 2 exit criteria met ✓</div>' +
+      [['NLI Adoption ≥ 20%','30%',100],['Ambiguity Rate ≤ 12%','9.4%',78],['Reversal Rate ≤ 5%','2.1%',42],['Audit Completeness 100%','100%',100],['Compliance Sign-off','✓ Received',100]].map(function(x){return '<div style="background:#fff;border-radius:6px;padding:11px;border:1px solid #E2E2E8;margin-bottom:7px;"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;"><span style="font-size:12px;color:#333;">'+x[0]+'</span><span style="font-family:JetBrains Mono,monospace;font-size:13px;font-weight:700;color:#00062B;">'+x[1]+'</span></div><div style="height:3px;background:#E8E8ED;border-radius:2px;"><div style="width:'+x[2]+'%;height:100%;background:#00875A;border-radius:2px;"></div></div></div>';}).join('') +
+      '</div>' + mobNav
+  };
+
+  frame.innerHTML = content[sid] || content['screen-dashboard'];
+  frame.scrollTop = 0;
+}
+
+document.addEventListener('keydown', function(e) {
+  if (e.key==='Escape') {
+    document.querySelectorAll('.modal-overlay.open').forEach(function(m){m.classList.remove('open');});
+    closeMobilePreview();
+  }
+});
+</script>
+</body>
+</html>
