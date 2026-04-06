@@ -333,6 +333,92 @@ body{font-family:var(--font-body);background:var(--brand-grey-10);color:var(--br
 ::-webkit-scrollbar{width:4px;height:4px;}
 ::-webkit-scrollbar-track{background:transparent;}
 ::-webkit-scrollbar-thumb{background:#CCC;border-radius:2px;}
+
+/* ═══ PHASE 3: VALUATION ENGINE CSS ═══════════════════════ */
+.version-card {
+  border: 1px solid var(--border); border-radius: var(--r-md);
+  overflow: hidden; margin-bottom: 10px; cursor: pointer;
+  transition: border-color 130ms;
+}
+.version-card:hover { border-color: #888; }
+.version-card.active-version { border-color: var(--brand-deep); box-shadow: 0 0 0 2px rgba(0,6,43,0.08); }
+.version-card-header {
+  padding: 10px 14px; display: flex; align-items: center;
+  gap: 10px; background: var(--brand-grey-05);
+  border-bottom: 1px solid var(--border);
+}
+.version-label { font-family: var(--font-mono); font-size: 11px; font-weight: 600; color: var(--brand-grey-60); }
+.version-title { font-size: 12.5px; font-weight: 600; color: var(--brand-deep); flex: 1; }
+.version-body { padding: 12px 14px; display: grid; grid-template-columns: repeat(auto-fit, minmax(110px, 1fr)); gap: 10px; }
+.version-field-label { font-size: 9.5px; font-weight: 500; text-transform: uppercase; letter-spacing: 0.07em; color: var(--brand-grey-60); margin-bottom: 3px; }
+.version-field-value { font-family: var(--font-mono); font-size: 13px; font-weight: 600; color: var(--brand-deep); }
+
+.scenario-row {
+  display: flex; align-items: center; gap: 12px;
+  padding: 10px 14px; border-bottom: 1px solid #F3F3F6;
+}
+.scenario-row:last-child { border-bottom: none; }
+.scenario-name { font-size: 12.5px; font-weight: 500; color: var(--brand-deep); flex: 1; min-width: 0; }
+.scenario-weight-input {
+  width: 60px; padding: 5px 7px; border: 1px solid var(--border);
+  border-radius: var(--r-sm); font-family: var(--font-mono); font-size: 12px;
+  text-align: right; color: var(--brand-deep); outline: none;
+}
+.scenario-weight-input:focus { border-color: #888; }
+.scenario-price { font-family: var(--font-mono); font-size: 13px; font-weight: 600; color: var(--brand-grey); min-width: 90px; text-align: right; }
+.wap-banner {
+  background: var(--brand-deep); border-radius: var(--r-md);
+  padding: 14px 18px; display: flex; align-items: center;
+  justify-content: space-between; margin-bottom: 14px;
+}
+.wap-label { font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase; color: rgba(255,255,255,0.4); font-weight: 600; }
+.wap-value { font-family: var(--font-mono); font-size: 24px; font-weight: 700; color: #fff; }
+.wap-meta { font-size: 11px; color: rgba(255,255,255,0.45); margin-top: 2px; }
+
+.weight-total-bar {
+  height: 5px; border-radius: 3px; overflow: hidden;
+  background: #E8E8ED; margin-top: 8px;
+}
+.weight-total-fill { height: 100%; border-radius: 3px; transition: width 200ms, background 200ms; }
+
+.scheduler-card {
+  border: 1px solid var(--border); border-radius: var(--r-md);
+  padding: 14px 16px; margin-bottom: 10px; cursor: pointer;
+  transition: border-color 130ms;
+}
+.scheduler-card:hover { border-color: #888; }
+.scheduler-card.active-sched { border-color: var(--brand-deep); background: rgba(0,6,43,0.02); }
+.scheduler-freq { font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.08em; color: var(--brand-grey-60); margin-bottom: 4px; }
+.scheduler-title { font-size: 13px; font-weight: 600; color: var(--brand-deep); margin-bottom: 2px; }
+.scheduler-meta { font-size: 11.5px; color: var(--brand-grey-60); }
+
+.rollover-step {
+  display: flex; gap: 14px; align-items: flex-start;
+  padding: 14px 0; border-bottom: 1px solid #F3F3F6;
+}
+.rollover-step:last-child { border-bottom: none; }
+.rollover-step-num {
+  width: 24px; height: 24px; border-radius: 50%;
+  background: var(--brand-deep); color: #fff;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 11px; font-weight: 700; flex-shrink: 0;
+}
+.rollover-step-body { flex: 1; }
+.rollover-step-label { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.06em; color: var(--brand-grey-60); margin-bottom: 4px; }
+.rollover-step-content { font-size: 12.5px; color: var(--brand-grey); }
+
+.security-row { padding: 11px 16px; border-bottom: 1px solid #F3F3F6; cursor: pointer; transition: background 120ms; }
+.security-row:hover { background: var(--brand-grey-05); }
+.security-row:last-child { border-bottom: none; }
+.security-name { font-weight: 500; color: var(--brand-deep); font-size: 12.5px; }
+.security-meta { font-size: 10.5px; color: var(--brand-grey-60); margin-top: 1px; }
+
+.staleness-badge {
+  display: inline-flex; align-items: center; gap: 4px;
+  font-size: 10px; font-weight: 600; padding: 2px 7px;
+  border-radius: 3px; background: #F5F1E8; color: #6B4A00;
+}
+
 </style>
 </head>
 <body>
@@ -1506,6 +1592,731 @@ document.addEventListener('keydown', function(e) {
     closeMobilePreview();
   }
 });
+
+// ══ PHASE 3: VALUATION ENGINE JS ══════════════════════════
+
+function selectVersion(el) {
+  document.querySelectorAll('.version-card').forEach(function(c){ c.classList.remove('active-version'); });
+  el.classList.add('active-version');
+}
+
+function updateWAP() {
+  var base = parseFloat(document.getElementById('w-base') && document.getElementById('w-base').value || 60);
+  var bull = parseFloat(document.getElementById('w-bull') && document.getElementById('w-bull').value || 25);
+  var bear = parseFloat(document.getElementById('w-bear') && document.getElementById('w-bear').value || 15);
+  var total = base + bull + bear;
+  var wap = (98.75 * base + 101.40 * bull + 93.20 * bear) / 100;
+
+  var disp = document.getElementById('wap-display');
+  var tDisp = document.getElementById('weight-total-display');
+  var bar = document.getElementById('weight-bar');
+  var msg = document.getElementById('weight-validation-msg');
+  var btn = document.getElementById('save-wap-btn');
+
+  if (disp) disp.textContent = isNaN(wap) ? '—' : wap.toFixed(2);
+  if (tDisp) tDisp.textContent = total + '%';
+
+  var pct = Math.min(total, 100);
+  var color = total === 100 ? '#79F2C0' : total > 100 ? '#FF8F73' : '#FFD700';
+  if (bar) { bar.style.width = pct + '%'; bar.style.background = color; }
+
+  if (msg) {
+    if (total === 100) {
+      msg.style.color = 'var(--pos)';
+      msg.textContent = '✓ Weights sum to 100% — WAP is valid';
+    } else if (total > 100) {
+      msg.style.color = 'var(--neg)';
+      msg.textContent = '✗ Weights sum to ' + total + '% — must equal 100%';
+    } else {
+      msg.style.color = 'var(--warn)';
+      msg.textContent = '⚑ Weights sum to ' + total + '% — ' + (100 - total) + '% remaining';
+    }
+  }
+  if (btn) {
+    btn.disabled = total !== 100;
+    btn.style.opacity = total === 100 ? '1' : '0.4';
+    btn.style.cursor = total === 100 ? 'pointer' : 'not-allowed';
+  }
+}
+
+// Extend mobile preview to include Phase 3 screens
+var _origRenderMob = renderMob;
+renderMob = function(sid) {
+  var frame = document.getElementById('mobile-frame-inner');
+  if (!frame) return;
+
+  function mobTopbar(title, back) {
+    return '<div style="background:#00062B;padding:12px 14px;display:flex;align-items:center;gap:10px;flex-shrink:0;">'+(back?'<button onclick="navMob(''+back+'')" style="background:none;border:none;color:rgba(255,255,255,0.6);font-size:16px;cursor:pointer;">←</button>':'')+'<div style="font-family:Syne,sans-serif;font-size:13px;font-weight:700;color:#fff;flex:1;">'+title+'</div><div style="width:26px;height:26px;border-radius:50%;background:rgba(255,255,255,0.1);display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;color:rgba(255,255,255,0.8);">YA</div></div>';
+  }
+  var navItems=[['screen-val-engine','∿','Valuations'],['screen-val-detail','≡','Security'],['screen-val-scenarios','⊞','Scenarios'],['screen-val-rollover','↺','Rollover'],['screen-val-scheduler','◷','Scheduler']];
+  var mobNav='<nav style="background:#fff;border-top:1px solid #E2E2E8;position:sticky;bottom:0;flex-shrink:0;"><div style="display:flex;">' +
+    navItems.map(function(i){return '<button style="flex:1;display:flex;flex-direction:column;align-items:center;gap:2px;padding:7px 2px;font-size:9.5px;font-family:DM Sans,sans-serif;font-weight:500;color:'+(i[0]===sid?'#00062B':'#858585')+';background:none;border:none;cursor:pointer;" onclick="navMob(''+i[0]+'')"><span style="font-size:14px;">'+i[1]+'</span>'+i[2]+'</button>';}).join('') + '</div></nav>';
+
+  var p3screens = {
+    'screen-val-engine': mobTopbar('Valuation Engine') +
+      '<div style="flex:1;overflow-y:auto;background:#F5F5F5;padding:12px;">' +
+      '<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px;">' +
+      [['Securities','6'],['Committed','2'],['Pending Review','3'],['Stale GP Data','2']].map(function(x){return '<div style="background:#fff;border-radius:6px;padding:11px;border:1px solid #E2E2E8;"><div style="font-size:9.5px;font-weight:600;text-transform:uppercase;letter-spacing:0.07em;color:#858585;margin-bottom:3px;">'+x[0]+'</div><div style="font-family:JetBrains Mono,monospace;font-size:18px;font-weight:700;color:#00062B;">'+x[1]+'</div></div>';}).join('') + '</div>' +
+      [['Ares Senior Secured TL A','98.75','Committed','#1A5C2A'],['Blackstone Direct Lending','96.10','Submitted','#2A2A4A'],['Apollo Euro CLO B','91.40','Draft','#5A5A5A'],['Carlyle Mezz Note 2021-C','104.20','Committed','#1A5C2A'],['Oaktree Distressed','72.80','Draft','#5A5A5A'],['KKR CRE Debt A','88.30','Pending Review','#6B4A00']].map(function(x){return '<div style="background:#fff;border-radius:6px;padding:11px;border:1px solid #E2E2E8;margin-bottom:7px;cursor:pointer;" onclick="navMob('screen-val-detail')"><div style="font-weight:600;font-size:11.5px;color:#00062B;margin-bottom:4px;">'+x[0]+'</div><div style="display:flex;justify-content:space-between;align-items:center;"><div style="font-family:JetBrains Mono,monospace;font-size:14px;font-weight:700;color:#00062B;">'+x[1]+'</div><span style="font-size:9.5px;font-weight:600;padding:2px 7px;border-radius:3px;background:'+x[3]+'22;color:'+x[3]+';">'+x[2]+'</span></div></div>';}).join('') +
+      '</div>' + mobNav,
+
+    'screen-val-detail': mobTopbar('Ares Senior Secured TL A','screen-val-engine') +
+      '<div style="flex:1;overflow-y:auto;background:#F5F5F5;padding:12px;">' +
+      '<div style="background:#FDFAF3;border:1px solid #D4A020;border-radius:6px;padding:9px 11px;font-size:11.5px;color:#5A3A00;margin-bottom:11px;">⚑ GP data updated — pull available from Domos</div>' +
+      [['Version','V3 · Base Case',''],['Status','Committed',''],['Methodology','DCF',''],['Discount Rate','8.25%','font-family:JetBrains Mono,monospace;'],['Credit Rating','B+',''],['WAP (Committed)','98.75','font-family:JetBrains Mono,monospace;font-size:18px;font-weight:700;color:#00062B;'],['Fair Value','€ 41,968,750','font-family:JetBrains Mono,monospace;'],['Versions','3 (Base · Bull · Bear','']].map(function(x){return '<div style="background:#fff;border-radius:6px;padding:10px;border:1px solid #E2E2E8;margin-bottom:7px;display:flex;justify-content:space-between;align-items:center;"><span style="font-size:10.5px;font-weight:500;text-transform:uppercase;letter-spacing:0.06em;color:#858585;">'+x[0]+'</span><span style="font-size:12.5px;'+x[2]+'">'+x[1]+'</span></div>';}).join('') +
+      '<div style="display:flex;gap:8px;margin-top:4px;"><button style="flex:1;background:#fff;color:#333;border:1px solid #E2E2E8;border-radius:6px;padding:9px;font-family:DM Sans,sans-serif;font-size:12px;font-weight:500;cursor:pointer;" onclick="navMob('screen-val-scenarios')">⊞ Scenarios</button><button style="flex:2;background:#00062B;color:#fff;border:none;border-radius:6px;padding:9px;font-family:DM Sans,sans-serif;font-size:12px;font-weight:600;cursor:pointer;" onclick="navMob('screen-val-scenarios')">Submit →</button></div>' +
+      '</div>' + mobNav,
+
+    'screen-val-scenarios': mobTopbar('Cash Flow Scenarios','screen-val-detail') +
+      '<div style="flex:1;overflow-y:auto;background:#F5F5F5;padding:12px;">' +
+      '<div style="background:#00062B;border-radius:8px;padding:14px;margin-bottom:12px;"><div style="font-size:9px;letter-spacing:0.1em;text-transform:uppercase;color:rgba(255,255,255,0.4);margin-bottom:4px;">Weighted Average Price</div><div style="font-family:JetBrains Mono,monospace;font-size:26px;font-weight:700;color:#fff;margin-bottom:2px;">98.75</div><div style="font-size:10.5px;color:rgba(255,255,255,0.4);">Base 60% · Bull 25% · Bear 15%</div></div>' +
+      [['Base Case','DCF at 8.25%, B+','98.75','60%'],['Bull Case','DCF at 7.50%, BB-','101.40','25%'],['Bear Case','DCF at 10.75%, B-','93.20','15%']].map(function(x){return '<div style="background:#fff;border-radius:6px;padding:11px;border:1px solid #E2E2E8;margin-bottom:7px;"><div style="font-weight:600;font-size:12px;color:#00062B;margin-bottom:3px;">'+x[0]+'</div><div style="font-size:10.5px;color:#858585;margin-bottom:6px;">'+x[1]+'</div><div style="display:flex;justify-content:space-between;align-items:center;"><span style="font-family:JetBrains Mono,monospace;font-size:15px;font-weight:700;color:#00062B;">'+x[2]+'</span><span style="font-size:11px;font-weight:600;background:#EDEDF0;color:#2A2A4A;padding:3px 8px;border-radius:3px;">Weight: '+x[3]+'</span></div></div>';}).join('') +
+      '<button style="width:100%;background:#00062B;color:#fff;border:none;border-radius:6px;padding:10px;font-family:DM Sans,sans-serif;font-size:13px;font-weight:600;cursor:pointer;" onclick="navMob('screen-val-detail')">Save WAP &amp; Submit →</button>' +
+      '</div>' + mobNav,
+
+    'screen-val-rollover': mobTopbar('Run Rollover') +
+      '<div style="flex:1;overflow-y:auto;background:#F5F5F5;padding:12px;">' +
+      [['Source Security','Ares Senior Secured Term Loan A'],['Source Version','V3 · Base Case (Committed)'],['New Valuation Date','30 Jun 2026'],['Market Data Date','28 Jun 2026 (auto)'],['Financial Date','31 Mar 2026'],['GP Data','Latest Domos snapshot (03 Apr)'],['New Version','V4 · Q2 2026 (Draft)'],['Overwrites?','Never — creates new version']].map(function(x){return '<div style="background:#fff;border-radius:6px;padding:10px;border:1px solid #E2E2E8;margin-bottom:7px;display:flex;justify-content:space-between;align-items:flex-start;gap:10px;"><span style="font-size:10.5px;font-weight:500;text-transform:uppercase;letter-spacing:0.06em;color:#858585;flex-shrink:0;">'+x[0]+'</span><span style="font-size:12px;color:#00062B;text-align:right;">'+x[1]+'</span></div>';}).join('') +
+      '<button style="width:100%;background:#00062B;color:#fff;border:none;border-radius:6px;padding:10px;font-family:DM Sans,sans-serif;font-size:13px;font-weight:600;cursor:pointer;margin-top:4px;" onclick="navMob('screen-val-engine')">↺ Execute Rollover</button>' +
+      '</div>' + mobNav,
+
+    'screen-val-scheduler': mobTopbar('Recurring Scheduler') +
+      '<div style="flex:1;overflow-y:auto;background:#F5F5F5;padding:12px;">' +
+      '<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px;">' +
+      [['Active','3'],['Paused','1'],['Adoption','67%'],['Next Run','Tonight']].map(function(x){return '<div style="background:#fff;border-radius:6px;padding:11px;border:1px solid #E2E2E8;"><div style="font-size:9.5px;font-weight:600;text-transform:uppercase;letter-spacing:0.07em;color:#858585;margin-bottom:3px;">'+x[0]+'</div><div style="font-family:JetBrains Mono,monospace;font-size:18px;font-weight:700;color:#00062B;">'+x[1]+'</div></div>';}).join('') + '</div>' +
+      [['Monthly — Blackstone','Blackstone Direct Lending · 05 Apr 02:00','Active','#1A5C2A'],['Quarterly — Ares','Ares Senior Secured TL · 30 Jun 02:00','Active','#1A5C2A'],['Quarterly — Carlyle','Carlyle Mezzanine Note · 30 Jun 02:00','Active','#1A5C2A'],['Monthly — Oaktree','Oaktree Distressed Debt · paused','Paused','#5A5A5A']].map(function(x){return '<div style="background:#fff;border-radius:6px;padding:11px;border:1px solid '+(x[2]==='Active'?'#E2E2E8':'#CCCCCC')+';margin-bottom:7px;"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px;"><div style="font-weight:600;font-size:12px;color:#00062B;">'+x[0]+'</div><span style="font-size:9.5px;font-weight:600;padding:2px 7px;border-radius:3px;background:'+x[3]+'22;color:'+x[3]+';">'+x[2]+'</span></div><div style="font-size:11px;color:#858585;">'+x[1]+'</div></div>';}).join('') +
+      '</div>' + mobNav
+  };
+
+  if (p3screens[sid]) {
+    frame.innerHTML = p3screens[sid];
+    frame.scrollTop = 0;
+  } else {
+    _origRenderMob(sid);
+  }
+};
+
 </script>
+
+<div class="screen" id="screen-val-engine">
+<div class="app-layout">
+<aside class="sidebar">
+  <div class="sidebar-logo"><div class="wordmark">SimCorp Alternatives</div><div class="module-tag">LP Platform · Phase 3</div></div>
+  <div class="sidebar-module-switcher">
+    <button class="sidebar-module-btn active" onclick="showScreen('screen-dashboard')">Capital Ops</button>
+    <button class="sidebar-module-btn " onclick="showScreen('screen-ledger')">Lens</button>
+  </div>
+  <nav class="sidebar-nav">
+    <div class="nav-section-label">Capital Operations</div>
+    <div class="nav-item " onclick="showScreen('screen-dashboard')"><span class="nav-icon">▤</span> Call Dashboard </div>
+<div class="nav-item " onclick="showScreen('screen-intake')"><span class="nav-icon">↓</span> Notice Intake <span class="nav-badge">3</span></div>
+<div class="nav-item " onclick="showScreen('screen-approval')"><span class="nav-icon">✓</span> Approval Queue <span class="nav-badge">4</span></div>
+<div class="nav-item " onclick="showScreen('screen-ledger')"><span class="nav-icon">≡</span> Capital Account Ledger </div>
+<div class="nav-item " onclick="showScreen('screen-overdue')"><span class="nav-icon">!</span> Overdue Alerts <span class="nav-badge">2</span></div>
+
+    <div class="nav-section-label">Phase 2 — NLI</div>
+    <div class="nav-item " onclick="showScreen('screen-nli-audit')"><span class="nav-icon">⊞</span> NLI Audit Trail </div>
+<div class="nav-item " onclick="showScreen('screen-nli-metrics')"><span class="nav-icon">∿</span> Adoption Metrics </div>
+
+    <div class="nav-section-label">Phase 3 — Valuations</div>
+    <div class="nav-item active" onclick="showScreen('screen-val-engine')"><span class="nav-icon">∿</span> Valuation Engine </div>
+<div class="nav-item " onclick="showScreen('screen-val-detail')"><span class="nav-icon">≡</span> Security Detail </div>
+<div class="nav-item " onclick="showScreen('screen-val-scenarios')"><span class="nav-icon">⊞</span> Cash Flow Scenarios </div>
+<div class="nav-item " onclick="showScreen('screen-val-rollover')"><span class="nav-icon">↺</span> Rollover </div>
+<div class="nav-item " onclick="showScreen('screen-val-scheduler')"><span class="nav-icon">◷</span> Recurring Scheduler </div>
+
+  </nav>
+  <div class="sidebar-footer"><div class="user-row"><div class="user-avatar">YA</div><div style="flex:1;min-width:0;"><div class="user-name">Yuki Andersson</div><div class="user-role">Valuation Analyst</div></div></div></div>
+</aside>
+<div class="main-content">
+  <div class="mobile-topbar"><div class="mobile-wordmark">Valuation Engine</div><div class="mobile-avatar">YA</div></div>
+  <div class="topbar">
+    <div class="topbar-breadcrumb"><span>Lens</span><span>›</span><span class="current">Valuation Engine</span></div>
+    <div class="topbar-spacer"></div>
+    <div class="topbar-actions">
+      <div class="ibor-badge"><span class="ibor-live-dot"></span> IBOR Live</div>
+      <button class="view-switcher-pill" onclick="openMobilePreview('screen-val-engine')">📱 Mobile view</button>
+      <button class="btn btn-secondary btn-sm" onclick="showScreen('screen-val-scheduler')">◷ Manage Scheduler</button>
+      <button class="btn btn-primary btn-sm" onclick="showScreen('screen-val-detail')">+ New Valuation</button>
+    </div>
+  </div>
+  <div class="page-body">
+    <div class="page-header">
+      <div><div class="page-title">Valuation Engine</div><div class="page-subtitle">Security-level valuations · Phase 3 Beta · 6 securities · 4 accounts active</div></div>
+      <div class="page-actions">
+        <button class="btn btn-secondary btn-sm" onclick="showScreen('screen-val-rollover')">↺ Run Rollover</button>
+      </div>
+    </div>
+    <div class="stat-grid">
+      <div class="stat-card"><div class="stat-label">Securities</div><div class="stat-value">6</div><div class="stat-meta">Across 5 funds</div></div>
+      <div class="stat-card"><div class="stat-label">Committed</div><div class="stat-value pos">2</div><div class="stat-meta">Approved &amp; locked</div></div>
+      <div class="stat-card"><div class="stat-label">Pending Review</div><div class="stat-value">3</div><div class="stat-meta">Draft or submitted</div></div>
+      <div class="stat-card"><div class="stat-label">GP Data Stale</div><div class="stat-value neg">2</div><div class="stat-meta">⚑ Pull update required</div></div>
+      <div class="stat-card"><div class="stat-label">Scheduler Active</div><div class="stat-value pos">4</div><div class="stat-meta">Overnight cadence</div></div>
+      <div class="stat-card"><div class="stat-label">Valuation Cycle Time</div><div class="stat-value">4.2d</div><div class="stat-meta">Target: ≤ 60% of baseline</div></div>
+    </div>
+    <div class="alert alert-warning"><span class="alert-icon">⚑</span><span><strong>2 securities have stale GP data</strong> — Ares Senior Secured Term Loan A and Carlyle Mezzanine Note. GP updated their Q1 financials on Domos. Pull update to restart the approval chain.</span></div>
+    <div class="table-card">
+      <div class="table-toolbar">
+        <span class="table-title">Security Valuations</span><span class="table-count">6 securities</span>
+        <div class="toolbar-spacer"></div>
+        <input class="search-input" placeholder="Search security, fund…">
+        <button class="filter-btn">Status ▾</button>
+        <button class="filter-btn">Cadence ▾</button>
+      </div>
+      <div class="security-row" onclick="showScreen('screen-val-detail')">
+  <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;">
+    <div style="flex:1;min-width:200px;">
+      <div class="security-name">Ares Senior Secured Term Loan A <span class="staleness-badge">⚑ GP data stale</span></div>
+      <div class="security-meta">Ares Capital Partners VI · Senior Secured · Q-2026-001</div>
+    </div>
+    <div style="display:flex;align-items:center;gap:16px;flex-wrap:wrap;">
+      <div style="text-align:right;"><div class="stat-label">Committed Price</div><div style="font-family:var(--font-mono);font-size:15px;font-weight:700;color:var(--brand-deep);">98.75</div></div>
+      <div style="text-align:right;"><div class="stat-label">Notional</div><div style="font-family:var(--font-mono);font-size:12px;color:var(--brand-grey);">€ 42,500,000</div></div>
+      <div style="text-align:right;"><div class="stat-label">Versions</div><div style="font-family:var(--font-mono);font-size:13px;font-weight:600;color:var(--brand-grey);">3</div></div>
+      <div style="text-align:right;"><div class="stat-label">Cadence</div><div style="font-size:12px;color:var(--brand-grey);">Quarterly</div></div>
+      <div><span class="chip chip-approved">Committed</span></div>
+    </div>
+  </div>
+</div><div class="security-row" onclick="showScreen('screen-val-detail')">
+  <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;">
+    <div style="flex:1;min-width:200px;">
+      <div class="security-name">Blackstone Direct Lending Facility </div>
+      <div class="security-meta">Blackstone Credit Opps · Direct Lending · Q-2026-002</div>
+    </div>
+    <div style="display:flex;align-items:center;gap:16px;flex-wrap:wrap;">
+      <div style="text-align:right;"><div class="stat-label">Committed Price</div><div style="font-family:var(--font-mono);font-size:15px;font-weight:700;color:var(--brand-deep);">96.10</div></div>
+      <div style="text-align:right;"><div class="stat-label">Notional</div><div style="font-family:var(--font-mono);font-size:12px;color:var(--brand-grey);">$ 67,200,000</div></div>
+      <div style="text-align:right;"><div class="stat-label">Versions</div><div style="font-family:var(--font-mono);font-size:13px;font-weight:600;color:var(--brand-grey);">2</div></div>
+      <div style="text-align:right;"><div class="stat-label">Cadence</div><div style="font-size:12px;color:var(--brand-grey);">Monthly</div></div>
+      <div><span class="chip chip-review">Submitted</span></div>
+    </div>
+  </div>
+</div><div class="security-row" onclick="showScreen('screen-val-detail')">
+  <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;">
+    <div style="flex:1;min-width:200px;">
+      <div class="security-name">Apollo Euro CLO Tranche B </div>
+      <div class="security-meta">Apollo AEPF IV · Mezzanine · Q-2026-003</div>
+    </div>
+    <div style="display:flex;align-items:center;gap:16px;flex-wrap:wrap;">
+      <div style="text-align:right;"><div class="stat-label">Committed Price</div><div style="font-family:var(--font-mono);font-size:15px;font-weight:700;color:var(--brand-deep);">91.40</div></div>
+      <div style="text-align:right;"><div class="stat-label">Notional</div><div style="font-family:var(--font-mono);font-size:12px;color:var(--brand-grey);">€ 28,750,000</div></div>
+      <div style="text-align:right;"><div class="stat-label">Versions</div><div style="font-family:var(--font-mono);font-size:13px;font-weight:600;color:var(--brand-grey);">1</div></div>
+      <div style="text-align:right;"><div class="stat-label">Cadence</div><div style="font-size:12px;color:var(--brand-grey);">Quarterly</div></div>
+      <div><span class="chip chip-draft">Draft</span></div>
+    </div>
+  </div>
+</div><div class="security-row" onclick="showScreen('screen-val-detail')">
+  <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;">
+    <div style="flex:1;min-width:200px;">
+      <div class="security-name">Carlyle Mezzanine Note 2021-C <span class="staleness-badge">⚑ GP data stale</span></div>
+      <div class="security-meta">Carlyle GCF III · Mezzanine · Q-2026-004</div>
+    </div>
+    <div style="display:flex;align-items:center;gap:16px;flex-wrap:wrap;">
+      <div style="text-align:right;"><div class="stat-label">Committed Price</div><div style="font-family:var(--font-mono);font-size:15px;font-weight:700;color:var(--brand-deep);">104.20</div></div>
+      <div style="text-align:right;"><div class="stat-label">Notional</div><div style="font-family:var(--font-mono);font-size:12px;color:var(--brand-grey);">£ 18,100,000</div></div>
+      <div style="text-align:right;"><div class="stat-label">Versions</div><div style="font-family:var(--font-mono);font-size:13px;font-weight:600;color:var(--brand-grey);">4</div></div>
+      <div style="text-align:right;"><div class="stat-label">Cadence</div><div style="font-size:12px;color:var(--brand-grey);">Quarterly</div></div>
+      <div><span class="chip chip-approved">Committed</span></div>
+    </div>
+  </div>
+</div><div class="security-row" onclick="showScreen('screen-val-detail')">
+  <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;">
+    <div style="flex:1;min-width:200px;">
+      <div class="security-name">Oaktree Distressed Debt Position </div>
+      <div class="security-meta">Oaktree Opps XII · Distressed · Q-2026-005</div>
+    </div>
+    <div style="display:flex;align-items:center;gap:16px;flex-wrap:wrap;">
+      <div style="text-align:right;"><div class="stat-label">Committed Price</div><div style="font-family:var(--font-mono);font-size:15px;font-weight:700;color:var(--brand-deep);">72.80</div></div>
+      <div style="text-align:right;"><div class="stat-label">Notional</div><div style="font-family:var(--font-mono);font-size:12px;color:var(--brand-grey);">$ 31,400,000</div></div>
+      <div style="text-align:right;"><div class="stat-label">Versions</div><div style="font-family:var(--font-mono);font-size:13px;font-weight:600;color:var(--brand-grey);">1</div></div>
+      <div style="text-align:right;"><div class="stat-label">Cadence</div><div style="font-size:12px;color:var(--brand-grey);">Monthly</div></div>
+      <div><span class="chip chip-draft">Draft</span></div>
+    </div>
+  </div>
+</div><div class="security-row" onclick="showScreen('screen-val-detail')">
+  <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;">
+    <div style="flex:1;min-width:200px;">
+      <div class="security-name">KKR CRE Debt Facility A </div>
+      <div class="security-meta">KKR REFT · Real Estate Debt · Q-2026-006</div>
+    </div>
+    <div style="display:flex;align-items:center;gap:16px;flex-wrap:wrap;">
+      <div style="text-align:right;"><div class="stat-label">Committed Price</div><div style="font-family:var(--font-mono);font-size:15px;font-weight:700;color:var(--brand-deep);">88.30</div></div>
+      <div style="text-align:right;"><div class="stat-label">Notional</div><div style="font-family:var(--font-mono);font-size:12px;color:var(--brand-grey);">$ 12,600,000</div></div>
+      <div style="text-align:right;"><div class="stat-label">Versions</div><div style="font-family:var(--font-mono);font-size:13px;font-weight:600;color:var(--brand-grey);">2</div></div>
+      <div style="text-align:right;"><div class="stat-label">Cadence</div><div style="font-size:12px;color:var(--brand-grey);">Quarterly</div></div>
+      <div><span class="chip chip-pending">Pending Review</span></div>
+    </div>
+  </div>
+</div>
+      <div style="padding:11px 16px;border-top:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;">
+        <span style="font-size:11.5px;color:var(--brand-grey-60);">Showing 6 of 6 securities</span>
+        <button class="btn btn-secondary btn-sm">↓ Export All Valuations</button>
+      </div>
+    </div>
+  </div>
+</div>
+<nav class="mobile-nav"><div class="mobile-nav-items"><button class="mobile-nav-item active" onclick="showScreen('screen-val-engine')"><span class="mob-icon">∿</span>Valuations</button><button class="mobile-nav-item " onclick="showScreen('screen-val-detail')"><span class="mob-icon">≡</span>Security</button><button class="mobile-nav-item " onclick="showScreen('screen-val-scenarios')"><span class="mob-icon">⊞</span>Scenarios</button><button class="mobile-nav-item " onclick="showScreen('screen-val-rollover')"><span class="mob-icon">↺</span>Rollover</button><button class="mobile-nav-item " onclick="showScreen('screen-val-scheduler')"><span class="mob-icon">◷</span>Scheduler</button></div></nav>
+</div></div>
+
+<div class="screen" id="screen-val-detail">
+<div class="app-layout">
+<aside class="sidebar"><div class="sidebar-logo"><div class="wordmark">SimCorp Alternatives</div><div class="module-tag">LP Platform · Phase 3</div></div><div class="sidebar-module-switcher"><button class="sidebar-module-btn active" onclick="showScreen('screen-dashboard')">Capital Ops</button><button class="sidebar-module-btn " onclick="showScreen('screen-ledger')">Lens</button></div><nav class="sidebar-nav"><div class="nav-section-label">Capital Operations</div><div class="nav-item " onclick="showScreen('screen-dashboard')"><span class="nav-icon">▤</span> Call Dashboard </div><div class="nav-item " onclick="showScreen('screen-intake')"><span class="nav-icon">↓</span> Notice Intake <span class=nav-badge>3</span></div><div class="nav-item " onclick="showScreen('screen-approval')"><span class="nav-icon">✓</span> Approval Queue <span class=nav-badge>4</span></div><div class="nav-item " onclick="showScreen('screen-ledger')"><span class="nav-icon">≡</span> Capital Account Ledger </div><div class="nav-item " onclick="showScreen('screen-overdue')"><span class="nav-icon">!</span> Overdue Alerts <span class=nav-badge>2</span></div><div class="nav-section-label">Phase 2 — NLI</div><div class="nav-item " onclick="showScreen('screen-nli-audit')"><span class="nav-icon">⊞</span> NLI Audit Trail </div><div class="nav-item " onclick="showScreen('screen-nli-metrics')"><span class="nav-icon">∿</span> Adoption Metrics </div><div class="nav-section-label">Phase 3 — Valuations</div><div class="nav-item " onclick="showScreen('screen-val-engine')"><span class="nav-icon">∿</span> Valuation Engine </div><div class="nav-item active" onclick="showScreen('screen-val-detail')"><span class="nav-icon">≡</span> Security Detail </div><div class="nav-item " onclick="showScreen('screen-val-scenarios')"><span class="nav-icon">⊞</span> Cash Flow Scenarios </div><div class="nav-item " onclick="showScreen('screen-val-rollover')"><span class="nav-icon">↺</span> Rollover </div><div class="nav-item " onclick="showScreen('screen-val-scheduler')"><span class="nav-icon">◷</span> Recurring Scheduler </div></nav><div class="sidebar-footer"><div class="user-row"><div class="user-avatar">YA</div><div style="flex:1;min-width:0;"><div class="user-name">Yuki Andersson</div><div class="user-role">Valuation Analyst</div></div></div></div></aside>
+<div class="main-content">
+  <div class="mobile-topbar"><div class="mobile-wordmark">Security Detail</div><div class="mobile-avatar">YA</div></div>
+  <div class="topbar">
+    <div class="topbar-breadcrumb"><span style="cursor:pointer;" onclick="showScreen('screen-val-engine')">Valuation Engine</span><span>›</span><span class="current">Ares Senior Secured Term Loan A</span></div>
+    <div class="topbar-spacer"></div>
+    <div class="topbar-actions">
+      <button class="view-switcher-pill" onclick="openMobilePreview('screen-val-detail')">📱 Mobile view</button>
+      <button class="btn btn-secondary btn-sm" onclick="showScreen('screen-val-scenarios')">⊞ Cash Flow Scenarios</button>
+      <button class="btn btn-secondary btn-sm" onclick="showScreen('screen-val-rollover')">↺ Run Rollover</button>
+      <button class="btn btn-primary btn-sm">+ New Version</button>
+    </div>
+  </div>
+  <div class="page-body">
+    <div class="page-header">
+      <div><div class="page-title">Ares Senior Secured Term Loan A</div><div class="page-subtitle">Ares Capital Partners VI · Senior Secured · EUR · ISIN: XS2401234567 · Q-2026-001</div></div>
+      <div class="page-actions">
+        <span class="chip chip-approved">Committed</span>
+        <span class="staleness-badge">⚑ GP data updated — pull available</span>
+      </div>
+    </div>
+
+    <div class="alert alert-warning"><span class="alert-icon">⚑</span><span>GP updated Q1 2026 financials on Domos on 03 Apr 2026. Pulling this update will restart the approval chain on any submitted or approved versions.</span>
+      <button class="btn btn-secondary btn-sm" style="margin-left:auto;flex-shrink:0;">Pull GP Update</button>
+    </div>
+
+    <div class="panel-grid">
+      <!-- VERSIONS PANEL -->
+      <div class="panel">
+        <div class="panel-header">
+          <span class="panel-title">Versions</span>
+          <span style="font-size:11px;color:var(--brand-grey-60);">3 versions · Immutable — edits create new version</span>
+        </div>
+        <div class="panel-body" style="padding:8px;">
+          
+<div class="version-card active-version" onclick="selectVersion(this)">
+  <div class="version-card-header">
+    <span class="version-label">V3 · Base Case</span>
+    <span class="version-title">Q1 2026 — Final</span>
+    <span class="chip chip-approved">Committed</span>
+  </div>
+  <div class="version-body">
+    <div><div class="version-field-label">Methodology</div><div class="version-field-value">DCF</div></div>
+    <div><div class="version-field-label">Discount Rate</div><div class="version-field-value">8.25%</div></div>
+    <div><div class="version-field-label">Credit Rating</div><div class="version-field-value">B+</div></div>
+    <div><div class="version-field-label">Committed Price</div><div class="version-field-value">98.75</div></div>
+    <div><div class="version-field-label">Valuation Date</div><div class="version-field-value">31 Mar 2026</div></div>
+  </div>
+</div>
+<div class="version-card" onclick="selectVersion(this)">
+  <div class="version-card-header">
+    <span class="version-label">V2 · Bull</span>
+    <span class="version-title">Q1 2026 — Bull Assumptions</span>
+    <span class="chip chip-approved">Approved</span>
+  </div>
+  <div class="version-body">
+    <div><div class="version-field-label">Methodology</div><div class="version-field-value">DCF</div></div>
+    <div><div class="version-field-label">Discount Rate</div><div class="version-field-value">7.50%</div></div>
+    <div><div class="version-field-label">Credit Rating</div><div class="version-field-value">BB-</div></div>
+    <div><div class="version-field-label">Committed Price</div><div class="version-field-value">101.40</div></div>
+    <div><div class="version-field-label">Valuation Date</div><div class="version-field-value">31 Mar 2026</div></div>
+  </div>
+</div>
+<div class="version-card" onclick="selectVersion(this)">
+  <div class="version-card-header">
+    <span class="version-label">V1 · Bear</span>
+    <span class="version-title">Q1 2026 — Bear Assumptions</span>
+    <span class="chip chip-draft">Draft</span>
+  </div>
+  <div class="version-body">
+    <div><div class="version-field-label">Methodology</div><div class="version-field-value">DCF</div></div>
+    <div><div class="version-field-label">Discount Rate</div><div class="version-field-value">10.75%</div></div>
+    <div><div class="version-field-label">Credit Rating</div><div class="version-field-value">B-</div></div>
+    <div><div class="version-field-label">Committed Price</div><div class="version-field-value">93.20</div></div>
+    <div><div class="version-field-label">Valuation Date</div><div class="version-field-value">31 Mar 2026</div></div>
+  </div>
+</div>
+
+        </div>
+      </div>
+
+      <!-- DETAIL PANEL -->
+      <div style="display:flex;flex-direction:column;gap:14px;">
+        <div class="panel">
+          <div class="panel-header"><span class="panel-title">V3 · Base Case — Active Version</span></div>
+          <div class="panel-body">
+            <div class="field-row"><span class="field-label">Methodology</span><span class="field-value">Discounted Cash Flow (DCF)</span></div>
+            <div class="field-row"><span class="field-label">Discount Rate</span><span class="field-value mono">8.25%</span></div>
+            <div class="field-row"><span class="field-label">Market Data Date</span><span class="field-value mono">30 Mar 2026</span></div>
+            <div class="field-row"><span class="field-label">Financial Date</span><span class="field-value mono">31 Dec 2025</span></div>
+            <div class="field-row"><span class="field-label">Credit Rating</span><span class="field-value">B+ (Analyst Assessment)</span></div>
+            <div class="field-row"><span class="field-label">WAP (Committed)</span><span class="field-value mono" style="font-size:15px;font-weight:700;color:var(--brand-deep);">98.75</span></div>
+            <div class="field-row"><span class="field-label">Notional</span><span class="field-value mono">€ 42,500,000</span></div>
+            <div class="field-row"><span class="field-label">Fair Value</span><span class="field-value mono" style="font-weight:600;">€ 41,968,750</span></div>
+          </div>
+        </div>
+        <div class="panel">
+          <div class="panel-header"><span class="panel-title">Approval Chain</span></div>
+          <div class="panel-body">
+            <div class="approval-chain">
+  <div class="approval-step done"><div class="approval-node done">✓</div><div class="approval-label">YA<br>Analyst</div></div>
+  <div class="approval-step done"><div class="approval-node done">✓</div><div class="approval-label">DL<br>Port. Mgr</div></div>
+  <div class="approval-step active"><div class="approval-node active">FC</div><div class="approval-label">F. Controller<br><span style="font-size:9px;">Pending</span></div></div>
+  <div class="approval-step"><div class="approval-node">⊡</div><div class="approval-label">Committed</div></div>
+</div>
+            <div style="margin-top:12px;padding:9px 10px;background:var(--brand-grey-10);border-radius:var(--r-md);">
+              <div style="font-size:10.5px;color:var(--brand-grey-60);margin-bottom:3px;">Awaiting Finance Controller</div>
+              <div style="font-size:12px;color:var(--brand-grey);">Fabienne Chen (Finance Controller) has 2 business days to action. Timer expires 08 Apr 2026.</div>
+            </div>
+          </div>
+        </div>
+        <div style="display:flex;gap:8px;justify-content:flex-end;">
+          <button class="btn btn-secondary" onclick="showScreen('screen-val-scenarios')">⊞ View Scenarios</button>
+          <button class="btn btn-primary" onclick="showScreen('screen-val-scenarios')">Submit for Approval →</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<nav class="mobile-nav"><div class="mobile-nav-items"><button class="mobile-nav-item " onclick="showScreen('screen-val-engine')"><span class="mob-icon">∿</span>Valuations</button><button class="mobile-nav-item active" onclick="showScreen('screen-val-detail')"><span class="mob-icon">≡</span>Security</button><button class="mobile-nav-item " onclick="showScreen('screen-val-scenarios')"><span class="mob-icon">⊞</span>Scenarios</button><button class="mobile-nav-item " onclick="showScreen('screen-val-rollover')"><span class="mob-icon">↺</span>Rollover</button><button class="mobile-nav-item " onclick="showScreen('screen-val-scheduler')"><span class="mob-icon">◷</span>Scheduler</button></div></nav>
+</div></div>
+
+<div class="screen" id="screen-val-scenarios">
+<div class="app-layout">
+<aside class="sidebar"><div class="sidebar-logo"><div class="wordmark">SimCorp Alternatives</div><div class="module-tag">LP Platform · Phase 3</div></div><div class="sidebar-module-switcher"><button class="sidebar-module-btn active" onclick="showScreen('screen-dashboard')">Capital Ops</button><button class="sidebar-module-btn " onclick="showScreen('screen-ledger')">Lens</button></div><nav class="sidebar-nav"><div class="nav-section-label">Capital Operations</div><div class="nav-item " onclick="showScreen('screen-dashboard')"><span class="nav-icon">▤</span> Call Dashboard </div><div class="nav-item " onclick="showScreen('screen-intake')"><span class="nav-icon">↓</span> Notice Intake <span class=nav-badge>3</span></div><div class="nav-item " onclick="showScreen('screen-approval')"><span class="nav-icon">✓</span> Approval Queue <span class=nav-badge>4</span></div><div class="nav-item " onclick="showScreen('screen-ledger')"><span class="nav-icon">≡</span> Capital Account Ledger </div><div class="nav-item " onclick="showScreen('screen-overdue')"><span class="nav-icon">!</span> Overdue Alerts <span class=nav-badge>2</span></div><div class="nav-section-label">Phase 2 — NLI</div><div class="nav-item " onclick="showScreen('screen-nli-audit')"><span class="nav-icon">⊞</span> NLI Audit Trail </div><div class="nav-item " onclick="showScreen('screen-nli-metrics')"><span class="nav-icon">∿</span> Adoption Metrics </div><div class="nav-section-label">Phase 3 — Valuations</div><div class="nav-item " onclick="showScreen('screen-val-engine')"><span class="nav-icon">∿</span> Valuation Engine </div><div class="nav-item " onclick="showScreen('screen-val-detail')"><span class="nav-icon">≡</span> Security Detail </div><div class="nav-item active" onclick="showScreen('screen-val-scenarios')"><span class="nav-icon">⊞</span> Cash Flow Scenarios </div><div class="nav-item " onclick="showScreen('screen-val-rollover')"><span class="nav-icon">↺</span> Rollover </div><div class="nav-item " onclick="showScreen('screen-val-scheduler')"><span class="nav-icon">◷</span> Recurring Scheduler </div></nav><div class="sidebar-footer"><div class="user-row"><div class="user-avatar">YA</div><div style="flex:1;min-width:0;"><div class="user-name">Yuki Andersson</div><div class="user-role">Valuation Analyst</div></div></div></div></aside>
+<div class="main-content">
+  <div class="mobile-topbar"><div class="mobile-wordmark">Cash Flow Scenarios</div><div class="mobile-avatar">YA</div></div>
+  <div class="topbar">
+    <div class="topbar-breadcrumb"><span style="cursor:pointer;" onclick="showScreen('screen-val-engine')">Valuation Engine</span><span>›</span><span style="cursor:pointer;" onclick="showScreen('screen-val-detail')">Ares SSTLA</span><span>›</span><span class="current">Cash Flow Scenarios</span></div>
+    <div class="topbar-spacer"></div>
+    <div class="topbar-actions">
+      <button class="view-switcher-pill" onclick="openMobilePreview('screen-val-scenarios')">📱 Mobile view</button>
+      <button class="btn btn-secondary btn-sm">+ Add Scenario</button>
+    </div>
+  </div>
+  <div class="page-body">
+    <div class="page-header">
+      <div><div class="page-title">Cash Flow Scenarios</div><div class="page-subtitle">Ares Senior Secured Term Loan A · Q-2026-001 · Weights must sum to 100%</div></div>
+    </div>
+
+    <div class="wap-banner">
+      <div>
+        <div class="wap-label">Weighted Average Price</div>
+        <div class="wap-value" id="wap-display">98.75</div>
+        <div class="wap-meta">Propagates through all fund, portfolio, and regulatory roll-ups</div>
+      </div>
+      <div style="text-align:right;">
+        <div class="wap-label">Total Weight</div>
+        <div style="font-family:var(--font-mono);font-size:22px;font-weight:700;color:#fff;" id="weight-total-display">100%</div>
+        <div class="weight-total-bar" style="width:120px;margin-top:6px;background:rgba(255,255,255,0.1);">
+          <div class="weight-total-fill" id="weight-bar" style="width:100%;background:#79F2C0;"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="panel-grid">
+      <div class="panel" style="grid-column:1/-1;">
+        <div class="panel-header">
+          <span class="panel-title">Scenario Weights</span>
+          <span style="font-size:11px;color:var(--brand-grey-60);">Adjust weights below — WAP updates in real time</span>
+        </div>
+        <div id="scenario-rows">
+<div class="scenario-row">
+  <div style="width:12px;height:12px;border-radius:50%;background:var(--brand-deep);flex-shrink:0;"></div>
+  <span class="scenario-name">Base Case — DCF at 8.25%, B+ rating, current financials</span>
+  <span class="scenario-price">98.75</span>
+  <div style="display:flex;align-items:center;gap:4px;">
+    <input class="scenario-weight-input" value="60" id="w-base" oninput="updateWAP()"> <span style="font-size:11px;color:var(--brand-grey-60);">%</span>
+  </div>
+</div>
+<div class="scenario-row">
+  <div style="width:12px;height:12px;border-radius:50%;background:#888;flex-shrink:0;"></div>
+  <span class="scenario-name">Bull Case — DCF at 7.50%, BB- rating, improved EBITDA projection</span>
+  <span class="scenario-price">101.40</span>
+  <div style="display:flex;align-items:center;gap:4px;">
+    <input class="scenario-weight-input" value="25" id="w-bull" oninput="updateWAP()"> <span style="font-size:11px;color:var(--brand-grey-60);">%</span>
+  </div>
+</div>
+<div class="scenario-row">
+  <div style="width:12px;height:12px;border-radius:50%;background:#B8860B;flex-shrink:0;"></div>
+  <span class="scenario-name">Bear Case — DCF at 10.75%, B- rating, stressed EBITDA -25%</span>
+  <span class="scenario-price">93.20</span>
+  <div style="display:flex;align-items:center;gap:4px;">
+    <input class="scenario-weight-input" value="15" id="w-bear" oninput="updateWAP()"> <span style="font-size:11px;color:var(--brand-grey-60);">%</span>
+  </div>
+</div>
+</div>
+        <div style="padding:12px 16px;border-top:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;">
+          <div id="weight-validation-msg" style="font-size:11.5px;color:var(--pos);">✓ Weights sum to 100% — WAP is valid</div>
+          <div style="display:flex;gap:8px;">
+            <button class="btn btn-secondary btn-sm" onclick="showScreen('screen-val-detail')">← Back to Security</button>
+            <button class="btn btn-primary" id="save-wap-btn" onclick="showScreen('screen-val-detail')">Save WAP &amp; Submit for Approval →</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="panel-grid">
+      <div class="panel">
+        <div class="panel-header"><span class="panel-title">Scenario Detail — Base Case</span></div>
+        <div class="panel-body">
+          <div class="field-row"><span class="field-label">Methodology</span><span class="field-value">DCF — Discounted Cash Flow</span></div>
+          <div class="field-row"><span class="field-label">Discount Rate</span><span class="field-value mono">8.25%</span></div>
+          <div class="field-row"><span class="field-label">Credit Rating</span><span class="field-value">B+ (Analyst)</span></div>
+          <div class="field-row"><span class="field-label">EBITDA Assumption</span><span class="field-value mono">€ 12.4M (base)</span></div>
+          <div class="field-row"><span class="field-label">LTV Ratio</span><span class="field-value mono">62.4%</span></div>
+          <div class="field-row"><span class="field-label">Scenario Price</span><span class="field-value mono" style="font-size:16px;font-weight:700;color:var(--brand-deep);">98.75</span></div>
+        </div>
+      </div>
+      <div class="panel">
+        <div class="panel-header"><span class="panel-title">Audit &amp; Lineage</span></div>
+        <div class="panel-body">
+          <div class="field-row"><span class="field-label">WAP Version</span><span class="field-value mono">V3-WAP-001</span></div>
+          <div class="field-row"><span class="field-label">Scenarios</span><span class="field-value">3 (Base 60% · Bull 25% · Bear 15%)</span></div>
+          <div class="field-row"><span class="field-label">Last Updated</span><span class="field-value mono">05 Apr 2026 09:12Z</span></div>
+          <div class="field-row"><span class="field-label">Updated By</span><span class="field-value">Yuki Andersson (YA-0067)</span></div>
+          <div class="field-row"><span class="field-label">Propagates To</span><span class="field-value">Ares Capital Partners VI → Portfolio</span></div>
+          <div class="field-row"><span class="field-label">IFRS 13 Level</span><span class="field-value">Level 3 — Unobservable inputs</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<nav class="mobile-nav"><div class="mobile-nav-items"><button class="mobile-nav-item " onclick="showScreen('screen-val-engine')"><span class="mob-icon">∿</span>Valuations</button><button class="mobile-nav-item " onclick="showScreen('screen-val-detail')"><span class="mob-icon">≡</span>Security</button><button class="mobile-nav-item active" onclick="showScreen('screen-val-scenarios')"><span class="mob-icon">⊞</span>Scenarios</button><button class="mobile-nav-item " onclick="showScreen('screen-val-rollover')"><span class="mob-icon">↺</span>Rollover</button><button class="mobile-nav-item " onclick="showScreen('screen-val-scheduler')"><span class="mob-icon">◷</span>Scheduler</button></div></nav>
+</div></div>
+
+<div class="screen" id="screen-val-rollover">
+<div class="app-layout">
+<aside class="sidebar"><div class="sidebar-logo"><div class="wordmark">SimCorp Alternatives</div><div class="module-tag">LP Platform · Phase 3</div></div><div class="sidebar-module-switcher"><button class="sidebar-module-btn active" onclick="showScreen('screen-dashboard')">Capital Ops</button><button class="sidebar-module-btn " onclick="showScreen('screen-ledger')">Lens</button></div><nav class="sidebar-nav"><div class="nav-section-label">Capital Operations</div><div class="nav-item " onclick="showScreen('screen-dashboard')"><span class="nav-icon">▤</span> Call Dashboard </div><div class="nav-item " onclick="showScreen('screen-intake')"><span class="nav-icon">↓</span> Notice Intake <span class=nav-badge>3</span></div><div class="nav-item " onclick="showScreen('screen-approval')"><span class="nav-icon">✓</span> Approval Queue <span class=nav-badge>4</span></div><div class="nav-item " onclick="showScreen('screen-ledger')"><span class="nav-icon">≡</span> Capital Account Ledger </div><div class="nav-item " onclick="showScreen('screen-overdue')"><span class="nav-icon">!</span> Overdue Alerts <span class=nav-badge>2</span></div><div class="nav-section-label">Phase 2 — NLI</div><div class="nav-item " onclick="showScreen('screen-nli-audit')"><span class="nav-icon">⊞</span> NLI Audit Trail </div><div class="nav-item " onclick="showScreen('screen-nli-metrics')"><span class="nav-icon">∿</span> Adoption Metrics </div><div class="nav-section-label">Phase 3 — Valuations</div><div class="nav-item " onclick="showScreen('screen-val-engine')"><span class="nav-icon">∿</span> Valuation Engine </div><div class="nav-item " onclick="showScreen('screen-val-detail')"><span class="nav-icon">≡</span> Security Detail </div><div class="nav-item " onclick="showScreen('screen-val-scenarios')"><span class="nav-icon">⊞</span> Cash Flow Scenarios </div><div class="nav-item active" onclick="showScreen('screen-val-rollover')"><span class="nav-icon">↺</span> Rollover </div><div class="nav-item " onclick="showScreen('screen-val-scheduler')"><span class="nav-icon">◷</span> Recurring Scheduler </div></nav><div class="sidebar-footer"><div class="user-row"><div class="user-avatar">YA</div><div style="flex:1;min-width:0;"><div class="user-name">Yuki Andersson</div><div class="user-role">Valuation Analyst</div></div></div></div></aside>
+<div class="main-content">
+  <div class="mobile-topbar"><div class="mobile-wordmark">Run Rollover</div><div class="mobile-avatar">YA</div></div>
+  <div class="topbar">
+    <div class="topbar-breadcrumb"><span style="cursor:pointer;" onclick="showScreen('screen-val-engine')">Valuation Engine</span><span>›</span><span class="current">Rollover</span></div>
+    <div class="topbar-spacer"></div>
+    <div class="topbar-actions">
+      <button class="view-switcher-pill" onclick="openMobilePreview('screen-val-rollover')">📱 Mobile view</button>
+    </div>
+  </div>
+  <div class="page-body">
+    <div class="page-header"><div><div class="page-title">Run Rollover</div><div class="page-subtitle">Copy prior period structure — refresh only date-sensitive inputs · Creates a new version, never overwrites</div></div></div>
+
+    <div class="panel-grid">
+      <div class="panel">
+        <div class="panel-header"><span class="panel-title">Rollover Configuration</span></div>
+        <div class="panel-body">
+          <div class="rollover-step">
+            <div class="rollover-step-num">1</div>
+            <div class="rollover-step-body">
+              <div class="rollover-step-label">Source Valuation</div>
+              <div class="rollover-step-content">
+                <select class="form-select" style="margin-bottom:8px;"><option>Ares Senior Secured Term Loan A — V3 · Base Case (Committed)</option><option>Select a different security…</option></select>
+                <div style="font-size:11px;color:var(--brand-grey-60);">The committed version of the selected security will be used as the rollover source. Scenario weights and structure are copied.</div>
+              </div>
+            </div>
+          </div>
+          <div class="rollover-step">
+            <div class="rollover-step-num">2</div>
+            <div class="rollover-step-body">
+              <div class="rollover-step-label">New Valuation Date</div>
+              <div class="rollover-step-content">
+                <input class="form-input mono" type="date" value="2026-06-30" style="margin-bottom:6px;">
+                <div style="font-size:11px;color:var(--brand-grey-60);">Quarter-end date for the new valuation period.</div>
+              </div>
+            </div>
+          </div>
+          <div class="rollover-step">
+            <div class="rollover-step-num">3</div>
+            <div class="rollover-step-body">
+              <div class="rollover-step-label">Market Data Date</div>
+              <div class="rollover-step-content">
+                <input class="form-input mono" type="date" value="2026-06-28" style="margin-bottom:6px;">
+                <div style="font-size:11px;color:var(--brand-grey-60);">Default: valuation date − 1 business day. Yield curves and credit spread indices will be pulled at this date.</div>
+              </div>
+            </div>
+          </div>
+          <div class="rollover-step">
+            <div class="rollover-step-num">4</div>
+            <div class="rollover-step-body">
+              <div class="rollover-step-label">Financial Date</div>
+              <div class="rollover-step-content">
+                <input class="form-input mono" type="date" value="2026-03-31" style="margin-bottom:6px;">
+                <div style="font-size:11px;color:var(--brand-grey-60);">Issuer financial statements date. If unavailable, a staleness warning will be shown — you can block or proceed (logged either way).</div>
+              </div>
+            </div>
+          </div>
+          <div class="rollover-step">
+            <div class="rollover-step-num">5</div>
+            <div class="rollover-step-body">
+              <div class="rollover-step-label">GP Data Source</div>
+              <div class="rollover-step-content">
+                <select class="form-select" style="margin-bottom:8px;">
+                  <option>Use latest Domos snapshot (pulled 03 Apr 2026)</option>
+                  <option>Pull fresh GP data before rollover</option>
+                  <option>Use existing financials (no GP pull)</option>
+                </select>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div style="display:flex;flex-direction:column;gap:14px;">
+        <div class="panel">
+          <div class="panel-header"><span class="panel-title">Rollover Preview</span></div>
+          <div class="panel-body">
+            <div class="field-row"><span class="field-label">Source Version</span><span class="field-value">V3 · Base Case · Q1 2026</span></div>
+            <div class="field-row"><span class="field-label">New Version</span><span class="field-value mono" style="color:var(--brand-deep);font-weight:600;">V4 · Q2 2026 (new)</span></div>
+            <div class="field-row"><span class="field-label">Carried Forward</span><span class="field-value">Methodology, DR, ratings, scenario weights</span></div>
+            <div class="field-row"><span class="field-label">Refreshed</span><span class="field-value">Valuation date, market data, financial date</span></div>
+            <div class="field-row"><span class="field-label">Status on Creation</span><span class="field-value"><span class="chip chip-draft">Draft</span></span></div>
+            <div class="field-row"><span class="field-label">Overwrites Existing?</span><span class="field-value" style="color:var(--pos);">Never — creates new immutable version</span></div>
+          </div>
+        </div>
+        <div class="panel">
+          <div class="panel-header"><span class="panel-title">Staleness Check</span></div>
+          <div class="panel-body">
+            <div class="field-row"><span class="field-label">Issuer Financials</span><span class="field-value"><span style="color:var(--warn);">⚑ Last filed: 31 Dec 2025 · 96 days old</span></span></div>
+            <div class="field-row"><span class="field-label">GP Domos Data</span><span class="field-value"><span style="color:var(--pos);">✓ Pulled 03 Apr 2026</span></span></div>
+            <div class="field-row"><span class="field-label">Market Data</span><span class="field-value"><span style="color:var(--pos);">✓ Will pull at rollover</span></span></div>
+            <div style="margin-top:10px;">
+              <div class="alert alert-warning" style="margin-bottom:0;"><span class="alert-icon">⚑</span><span>Issuer financials are 96 days old. You can proceed — your choice will be logged in the audit record.</span></div>
+            </div>
+          </div>
+        </div>
+        <div class="panel">
+          <div class="panel-header"><span class="panel-title">Bulk Rollover</span></div>
+          <div class="panel-body">
+            <div style="font-size:12px;color:var(--brand-grey-60);margin-bottom:10px;">Apply this rollover configuration to multiple securities in one run.</div>
+            <div style="display:flex;flex-direction:column;gap:6px;margin-bottom:12px;">
+              <label style="display:flex;align-items:center;gap:8px;font-size:12px;cursor:pointer;"><input type="checkbox" checked> Ares Senior Secured Term Loan A</label><label style="display:flex;align-items:center;gap:8px;font-size:12px;cursor:pointer;"><input type="checkbox" > Blackstone Direct Lending Facility</label><label style="display:flex;align-items:center;gap:8px;font-size:12px;cursor:pointer;"><input type="checkbox" > Apollo Euro CLO Tranche B</label><label style="display:flex;align-items:center;gap:8px;font-size:12px;cursor:pointer;"><input type="checkbox" checked> Carlyle Mezzanine Note 2021-C</label>
+            </div>
+          </div>
+        </div>
+        <button class="btn btn-primary btn-lg" style="width:100%;" onclick="showScreen('screen-val-detail')">↺ Execute Rollover — 2 Securities</button>
+      </div>
+    </div>
+  </div>
+</div>
+{mob_nav3("screen-val-rollover")}
+</div></div>
+
+<div class="screen" id="screen-val-scheduler">
+<div class="app-layout">
+<aside class="sidebar"><div class="sidebar-logo"><div class="wordmark">SimCorp Alternatives</div><div class="module-tag">LP Platform · Phase 3</div></div><div class="sidebar-module-switcher"><button class="sidebar-module-btn active" onclick="showScreen('screen-dashboard')">Capital Ops</button><button class="sidebar-module-btn " onclick="showScreen('screen-ledger')">Lens</button></div><nav class="sidebar-nav"><div class="nav-section-label">Capital Operations</div><div class="nav-item " onclick="showScreen('screen-dashboard')"><span class="nav-icon">▤</span> Call Dashboard </div><div class="nav-item " onclick="showScreen('screen-intake')"><span class="nav-icon">↓</span> Notice Intake <span class=nav-badge>3</span></div><div class="nav-item " onclick="showScreen('screen-approval')"><span class="nav-icon">✓</span> Approval Queue <span class=nav-badge>4</span></div><div class="nav-item " onclick="showScreen('screen-ledger')"><span class="nav-icon">≡</span> Capital Account Ledger </div><div class="nav-item " onclick="showScreen('screen-overdue')"><span class="nav-icon">!</span> Overdue Alerts <span class=nav-badge>2</span></div><div class="nav-section-label">Phase 2 — NLI</div><div class="nav-item " onclick="showScreen('screen-nli-audit')"><span class="nav-icon">⊞</span> NLI Audit Trail </div><div class="nav-item " onclick="showScreen('screen-nli-metrics')"><span class="nav-icon">∿</span> Adoption Metrics </div><div class="nav-section-label">Phase 3 — Valuations</div><div class="nav-item " onclick="showScreen('screen-val-engine')"><span class="nav-icon">∿</span> Valuation Engine </div><div class="nav-item " onclick="showScreen('screen-val-detail')"><span class="nav-icon">≡</span> Security Detail </div><div class="nav-item " onclick="showScreen('screen-val-scenarios')"><span class="nav-icon">⊞</span> Cash Flow Scenarios </div><div class="nav-item " onclick="showScreen('screen-val-rollover')"><span class="nav-icon">↺</span> Rollover </div><div class="nav-item active" onclick="showScreen('screen-val-scheduler')"><span class="nav-icon">◷</span> Recurring Scheduler </div></nav><div class="sidebar-footer"><div class="user-row"><div class="user-avatar">YA</div><div style="flex:1;min-width:0;"><div class="user-name">Yuki Andersson</div><div class="user-role">Valuation Analyst</div></div></div></div></aside>
+<div class="main-content">
+  <div class="mobile-topbar"><div class="mobile-wordmark">Recurring Scheduler</div><div class="mobile-avatar">YA</div></div>
+  <div class="topbar">
+    <div class="topbar-breadcrumb"><span style="cursor:pointer;" onclick="showScreen('screen-val-engine')">Valuation Engine</span><span>›</span><span class="current">Recurring Scheduler</span></div>
+    <div class="topbar-spacer"></div>
+    <div class="topbar-actions">
+      <button class="view-switcher-pill" onclick="openMobilePreview('screen-val-scheduler')">📱 Mobile view</button>
+      <button class="btn btn-primary btn-sm">+ New Schedule</button>
+    </div>
+  </div>
+  <div class="page-body">
+    <div class="page-header">
+      <div><div class="page-title">Recurring Scheduler</div><div class="page-subtitle">Autonomous overnight valuations · Completed valuations placed in Pending Review · Notifications sent on completion or failure</div></div>
+    </div>
+    <div class="stat-grid">
+      <div class="stat-card"><div class="stat-label">Active Schedules</div><div class="stat-value pos">3</div><div class="stat-meta">Running overnight</div></div>
+      <div class="stat-card"><div class="stat-label">Paused</div><div class="stat-value">1</div><div class="stat-meta">Manual pause</div></div>
+      <div class="stat-card"><div class="stat-label">Next Overnight Run</div><div class="stat-value" style="font-size:16px;">Tonight</div><div class="stat-meta">05 Apr 2026 02:00 UTC</div></div>
+      <div class="stat-card"><div class="stat-label">Scheduler Adoption</div><div class="stat-value pos">67%</div><div class="stat-meta">Target: 60% by Month 3 ✓</div></div>
+    </div>
+    <div class="alert alert-success"><span class="alert-icon">✓</span><span><strong>Scheduler adoption target met</strong> — 67% of recurring valuations now managed via Lens scheduler (target: 60% by Month 3). Phase 3 exit criteria on track.</span></div>
+    <div class="panel-grid">
+      <div>
+        <div style="font-family:var(--font-display);font-size:13px;font-weight:600;color:var(--brand-deep);margin-bottom:10px;">Configured Schedules</div>
+        <div class="scheduler-card active-sched">
+  <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:10px;">
+    <div>
+      <div class="scheduler-freq">Monthly</div>
+      <div class="scheduler-title">Monthly Rollover — Blackstone</div>
+      <div class="scheduler-meta">Blackstone Direct Lending Facility</div>
+    </div>
+    <span class="chip chip-approved">Active</span>
+  </div>
+  <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-top:10px;">
+    <div><div class="stat-label">Last Run</div><div class="mono" style="font-size:11.5px;">05 Mar 2026</div></div>
+    <div><div class="stat-label">Next Run</div><div class="mono" style="font-size:11.5px;color:var(--brand-deep);">05 Apr 2026 02:00</div></div>
+    <div><div class="stat-label">On Completion</div><div style="font-size:11.5px;">→ Pending Review</div></div>
+  </div>
+</div><div class="scheduler-card active-sched">
+  <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:10px;">
+    <div>
+      <div class="scheduler-freq">Quarterly</div>
+      <div class="scheduler-title">Quarterly Rollover — Ares</div>
+      <div class="scheduler-meta">Ares Senior Secured Term Loan A</div>
+    </div>
+    <span class="chip chip-approved">Active</span>
+  </div>
+  <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-top:10px;">
+    <div><div class="stat-label">Last Run</div><div class="mono" style="font-size:11.5px;">31 Dec 2025</div></div>
+    <div><div class="stat-label">Next Run</div><div class="mono" style="font-size:11.5px;color:var(--brand-deep);">30 Jun 2026 02:00</div></div>
+    <div><div class="stat-label">On Completion</div><div style="font-size:11.5px;">→ Pending Review</div></div>
+  </div>
+</div><div class="scheduler-card active-sched">
+  <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:10px;">
+    <div>
+      <div class="scheduler-freq">Quarterly</div>
+      <div class="scheduler-title">Quarterly Rollover — Carlyle</div>
+      <div class="scheduler-meta">Carlyle Mezzanine Note 2021-C</div>
+    </div>
+    <span class="chip chip-approved">Active</span>
+  </div>
+  <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-top:10px;">
+    <div><div class="stat-label">Last Run</div><div class="mono" style="font-size:11.5px;">31 Dec 2025</div></div>
+    <div><div class="stat-label">Next Run</div><div class="mono" style="font-size:11.5px;color:var(--brand-deep);">30 Jun 2026 02:00</div></div>
+    <div><div class="stat-label">On Completion</div><div style="font-size:11.5px;">→ Pending Review</div></div>
+  </div>
+</div><div class="scheduler-card ">
+  <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:10px;">
+    <div>
+      <div class="scheduler-freq">Monthly</div>
+      <div class="scheduler-title">Monthly Rollover — Oaktree</div>
+      <div class="scheduler-meta">Oaktree Opportunities Fund XII</div>
+    </div>
+    <span class="chip chip-draft">Paused</span>
+  </div>
+  <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-top:10px;">
+    <div><div class="stat-label">Last Run</div><div class="mono" style="font-size:11.5px;">28 Feb 2026</div></div>
+    <div><div class="stat-label">Next Run</div><div class="mono" style="font-size:11.5px;color:var(--brand-deep);">05 Apr 2026 02:00</div></div>
+    <div><div class="stat-label">On Completion</div><div style="font-size:11.5px;">→ Pending Review</div></div>
+  </div>
+</div>
+      </div>
+      <div class="panel" style="align-self:start;">
+        <div class="panel-header"><span class="panel-title">Configure New Schedule</span></div>
+        <div class="panel-body">
+          <div class="form-group">
+            <label class="form-label">Security</label>
+            <select class="form-select"><option>Select security…</option><option>Ares Senior Secured Term Loan A</option><option>Blackstone Direct Lending Facility</option><option>Apollo Euro CLO Tranche B</option><option>KKR CRE Debt Facility A</option></select>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Frequency</label>
+            <select class="form-select"><option>Quarterly</option><option>Monthly</option><option>Weekly</option><option>Daily</option></select>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Run Time (UTC)</label>
+            <input class="form-input mono" type="time" value="02:00">
+          </div>
+          <div class="form-group">
+            <label class="form-label">On Completion</label>
+            <select class="form-select"><option>Place in Pending Review + notify analyst</option><option>Auto-submit for approval (analyst pre-approved)</option></select>
+          </div>
+          <div class="form-group">
+            <label class="form-label">On Failure</label>
+            <select class="form-select"><option>Notify analyst immediately</option><option>Retry once, then notify</option></select>
+          </div>
+          <button class="btn btn-primary" style="width:100%;" onclick="showScreen('screen-val-engine')">Save Schedule</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<nav class="mobile-nav"><div class="mobile-nav-items"><button class="mobile-nav-item " onclick="showScreen('screen-val-engine')"><span class="mob-icon">∿</span>Valuations</button><button class="mobile-nav-item " onclick="showScreen('screen-val-detail')"><span class="mob-icon">≡</span>Security</button><button class="mobile-nav-item " onclick="showScreen('screen-val-scenarios')"><span class="mob-icon">⊞</span>Scenarios</button><button class="mobile-nav-item " onclick="showScreen('screen-val-rollover')"><span class="mob-icon">↺</span>Rollover</button><button class="mobile-nav-item active" onclick="showScreen('screen-val-scheduler')"><span class="mob-icon">◷</span>Scheduler</button></div></nav>
+</div></div>
 </body>
 </html>
